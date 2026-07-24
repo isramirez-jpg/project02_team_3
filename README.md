@@ -31,6 +31,8 @@ _Slices and beyond-scope items we are consciously NOT building. Move an item to 
 Issue if the team later decides to attempt it for extra credit._
 
 - Slice 4 — <name>: not building (team of 3).
+- Slice 5 - <name>: not building (team of 3).
+- <Slice 1>: <beyond-scope item> — out of scope.
 - <Slice 2>: <beyond-scope item> — out of scope.
 - <Slice 3>: <beyond-scope item> — out of scope.
 
