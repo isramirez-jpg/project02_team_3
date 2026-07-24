@@ -32,9 +32,14 @@ Issue if the team later decides to attempt it for extra credit._
 
 - Slice 4 — <name>: not building (team of 3).
 - Slice 5 - <name>: not building (team of 3).
-- <Slice 1>: <addresses> — out of scope.
-- <Slice 2>: <beyond-scope item> — out of scope.
-- <Slice 3>: <beyond-scope item> — out of scope.
+- <Slice 1>: addresses — out of scope.
+- <Slice 1>: extra roles — out of scope.
+- <Slice 2>: categories/filters — out of scope.
+- <Slice 2>: image handling — out of scope.
+- <Slice 2>: pagination — out of scope.
+- <Slice 3>: coupons — out of scope.
+- <Slice 3>: tax/shipping — out of scope.
+- <Slice 3>: payment-API stub — out of scope.
 
 ## Code Review Log
 | PR | Author | Human reviewer(s) | AI review (link) | Outcome |
