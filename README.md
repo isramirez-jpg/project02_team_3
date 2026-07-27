@@ -19,7 +19,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
 |-------|-------|-----------------|--------|------------|-------|--------------------|--------|
 | 1 — Accounts | Miguel Quezada | mquezada2026 |  |  |  |  | in-progress|
-| 2 — Catalog | Ha Nguyen | hanguyen1979 | | | | | in-progress |
+| 2 — Catalog | Ha Nguyen | hanguyen1979 | | | |Notifications / Alerts | in-progress |
 | 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | | | | Table view with live data | in-progress|
 | 4 — Order History & Management | | | | | | | WILL NOT DO|
 | 5 - Reviews & Ratings | | | | | | | WILL NOT DO|
