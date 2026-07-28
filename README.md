@@ -20,7 +20,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 |-------|-------|-----------------|--------|------------|-------|--------------------|--------|
 | 1 — Accounts | Miguel Quezada | mquezada2026 |  |  |  |  | in-progress|
 | 2 — Catalog | Ha Nguyen | hanguyen1979 | | | |Notifications / Alerts | in-progress |
-| 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | | | | JavaFX TableView<CartItem> | in-progress|
+| 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | | | JavaFX TableView<CartItem> | in-progress|
 | 4 — Order History & Management | | | | | | | WILL NOT DO|
 | 5 - Reviews & Ratings | | | | | | | WILL NOT DO|
 
