@@ -18,7 +18,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 ## Team & Slice Ownership
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
 |-------|-------|-----------------|--------|------------|-------|--------------------|--------|
-| 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, 10, #11 |  |  | TableView/ListView, custom reusable FXML component, Supabase backend (with local persistence) | in-progress|
+| 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, #10, #11 |  |  | TableView/ListView, custom reusable FXML component, Supabase backend (with local persistence) | in-progress|
 | 2 — Catalog | Ha Nguyen | hanguyen1979 |#5, #6, #7 | | |Notifications / Alerts | in-progress |
 | 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | | | JavaFX TableView<CartItem> | in-progress|
 | 4 — Order History & Management | | | | | | | WILL NOT DO|
