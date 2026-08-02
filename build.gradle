@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainClass = 'Main'
+}
+
+javafx {
+    version = '25.0.3'
+    // Added javafx.fxml module to enable FXML scene rendering
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.12.1'
+    // Added JUnit Platform Launcher dependency to execute JUnit 5 tests in Gradle
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    //  Make sure this dependency is present
+    //  It is required for SQLite database connectivity
+    implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
+    // Added jBCrypt dependency for password hashing and salting
+    implementation 'org.mindrot:jbcrypt:0.4'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
