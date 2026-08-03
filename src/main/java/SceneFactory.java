@@ -4,14 +4,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+// Import the exception class thrown when an FXML file cant be found, read, or loaded
+import java.io.IOException;
+// Loads an object hierarchy from an XML document
+import javafx.fxml.FXMLLoader;
+// Import the base class for all JavaFX UI nodes that can contain children
+import javafx.scene.Parent;
+// Import the Image and ImageView classes to load and display images
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * Builds and returns Scene objects on demand.
- *
  * The Client calls create() with a SceneType.
  * The Factory knows how to build each scene - Main knows nothing about layouts.
  *
  * Note: DatabaseManager is threaded through every signature here.
+ *
+ *  @author Ha Nguyen
+ *  @author Isabel Ramirez
+ *  @author Miguel Quezada
+ *  @version 0.1.0
+ *  @since 2026-08-02
  */
 public class SceneFactory {
 
@@ -23,7 +37,10 @@ public class SceneFactory {
     return switch (type) {
       case MAIN      -> buildMainScene(stage, db);
       case LOGIN     -> buildLoginScene(stage, db);
-      case DASHBOARD -> buildDashboardScene(stage, db);
+      case ADMIN_TODO_LIST -> buildDashboardScene(stage, db);
+      // Constructs the Admin UI view from its FXML layout
+      // and initializes its controller
+      case ADMIN_USER_DASHBOARD -> buildAdminScene(stage, db);
     };
   }
 
@@ -60,13 +77,28 @@ public class SceneFactory {
     Label title = new Label("Welcome to Cache Me Outside Clothing Co.");
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-    Button goButton = new Button("Open Management Todo List");
-    goButton.setOnAction(e ->
-        stage.setScene(create(SceneType.DASHBOARD, stage, db))
-    );
-
-    VBox centerLayout = new VBox(16, title, goButton);
+    VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
+
+    // Only show the Admin To do List button if the
+    // current logged-in user has ADMIN role
+    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserRole(currentUser))) {
+      Button managementTodoListButton = new Button("Admin Todo List");
+      managementTodoListButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
+      managementTodoListButton.setOnAction(e ->
+          stage.setScene(create(SceneType.ADMIN_TODO_LIST, stage, db))
+      );
+      centerLayout.getChildren().add(managementTodoListButton);
+    }
+
+    // Only show the Admin User Dashboard button if the
+    // current logged-in user has ADMIN role
+    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserRole(currentUser))) {
+      Button adminButton = new Button("Admin User Dashboard");
+      adminButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
+      adminButton.setOnAction(e -> stage.setScene(create(SceneType.ADMIN_USER_DASHBOARD, stage, db)));
+      centerLayout.getChildren().add(adminButton);
+    }
 
     BorderPane root = new BorderPane();
     root.setTop(topHeader);
@@ -77,6 +109,26 @@ public class SceneFactory {
   }
 
   /**
+   * Builds the ADMIN scene.
+   *
+   * @param stage the Stage object for the application window
+   * @param db the DatabaseManager instance
+   * @return a new Scene containing the Admin UI
+   */
+  private static Scene buildAdminScene(Stage stage, DatabaseManager db) {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(SceneFactory.class.getResource("/AdminScene.fxml"));
+      Parent root = fxmlLoader.load();
+      AdminController controller = fxmlLoader.getController();
+      controller.initData(stage, db);
+      return new Scene(root, 600, 450);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return buildMainScene(stage, db);
+    }
+  }
+
+  /**
    * Builds the LOGIN scene, allowing users to log in or create a new account.
    *
    * @param stage  the Stage object for the application window
@@ -84,6 +136,21 @@ public class SceneFactory {
    * @return a new Scene containing the login and registration UI
    */
   private static Scene buildLoginScene(Stage stage, DatabaseManager db) {
+
+    // Load team logo image
+    ImageView teamLogoImageView = new ImageView();
+    try {
+      // get the team logo from the resources folder
+      Image teamLogoImage = new Image(SceneFactory.class.getResourceAsStream("/team-logo.png"));
+      teamLogoImageView.setImage(teamLogoImage);
+      // set the width to 120 pixels
+      teamLogoImageView.setFitWidth(120);
+      teamLogoImageView.setPreserveRatio(true);
+    } catch (Exception e) {
+      // Catch exception and display a message in case the team logo is not found
+      System.out.println("Unable to load team logo: " + e.getMessage());
+    }
+
     Label title = new Label("Welcome. Please Log In");
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
@@ -144,6 +211,8 @@ public class SceneFactory {
 
     Button submitButton = new Button("Login");
     Hyperlink toggleModeLink = new Hyperlink("Need an account? Register here");
+    // Set text color using inline style
+    toggleModeLink.setStyle("-fx-text-fill: #146a9b;");
 
     // Flag to track whether logging in or registering
     final boolean[] isRegisterMode = { false };
@@ -166,7 +235,7 @@ public class SceneFactory {
 
     submitButton.setOnAction(e -> {
       String user = usernameField.getText().trim();
-      String pass = passwordField.getText().trim();
+      String pass = passwordField.getText();
 
       if (user.isEmpty() || pass.isEmpty()) {
         statusLabel.setStyle("-fx-text-fill: red;");
@@ -216,6 +285,8 @@ public class SceneFactory {
     });
 
     VBox layout = new VBox(10,
+        // add team logo image at the top of the login scene
+        teamLogoImageView,
         title,
         usernameField,
         passwordField,
