@@ -4,6 +4,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import java.io.IOException;
 
 /**
  * Builds and returns Scene objects on demand.
@@ -310,27 +313,47 @@ public class SceneFactory {
    */
   private static Scene buildCartScene(Stage stage,
                                       DatabaseManager db) {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+              SceneFactory.class.getResource("/Cart.fxml")
+      );
 
-    Label title = new Label("Shopping Cart");
-    title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+      Parent root = loader.load();
 
-    TableView<CartItem> cartTable = new TableView<>();
+      CartController controller =
+              loader.getController();
 
-    TableColumn<CartItem,String> productColumn = new TableColumn<>("Product");
-    TableColumn<CartItem,Integer> quantityColumn = new TableColumn<>("Quantity");
-    TableColumn<CartItem,String> priceColumn = new TableColumn<>("Price");
-    cartTable.getColumns().addAll(productColumn, quantityColumn, priceColumn);
-    Label subtotalLabel = new Label("Subtotal : $0.00");
-    Button backButton = new Button("Back");
-    backButton.setOnAction(e ->
-            stage.setScene(create(SceneType.MAIN, stage, db))
-    );
+      controller.setApplicationData(stage, db);
 
-    VBox layout = new VBox(20, title, cartTable,subtotalLabel, backButton);
-    layout.setAlignment(Pos.CENTER);
-    layout.setPadding(new Insets(20));
+      return new Scene(root, 600, 450);
 
-    return new Scene(layout, 600, 450);
+    } catch (IOException e) {
+      throw new IllegalStateException(
+              "Unable to load Cart.fxml.",
+              e
+      );
+    }
+
+    //Label title = new Label("Shopping Cart");
+    //title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+    //TableView<CartItem> cartTable = new TableView<>();
+
+    //TableColumn<CartItem,String> productColumn = new TableColumn<>("Product");
+    //TableColumn<CartItem,Integer> quantityColumn = new TableColumn<>("Quantity");
+    //TableColumn<CartItem,String> priceColumn = new TableColumn<>("Price");
+    //cartTable.getColumns().addAll(productColumn, quantityColumn, priceColumn);
+    //Label subtotalLabel = new Label("Subtotal : $0.00");
+    //Button backButton = new Button("Back");
+    //backButton.setOnAction(e ->
+      //      stage.setScene(create(SceneType.MAIN, stage, db))
+    //);
+
+    //VBox layout = new VBox(20, title, cartTable,subtotalLabel, backButton);
+    //layout.setAlignment(Pos.CENTER);
+    //layout.setPadding(new Insets(20));
+
+    //return new Scene(layout, 600, 450);
   }
 
 //endregion
