@@ -2,6 +2,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * Name: Ha Nguyen
@@ -11,6 +12,13 @@ import javafx.scene.control.TextField;
  * to insert a new category into the categories database table.
  */
 public class AddCategoryController {
+    private Stage stage;
+    private DatabaseManager db;
+
+    public void setNavigation(Stage stage, DatabaseManager db) {
+        this.stage = stage;
+        this.db = db;
+    }
 
     @FXML
     private TextField categoryNameField;
@@ -69,5 +77,19 @@ public class AddCategoryController {
         categoryNameField.clear();
         descriptionArea.clear();
         messageLabel.setText("");
+    }
+
+    /**
+     * Back to Dashboard.
+     */
+    @FXML
+    private void handleBackToDashboard() {
+        stage.setScene(
+                SceneFactory.create(
+                        SceneType.DASHBOARD,
+                        stage,
+                        db
+                )
+        );
     }
 }

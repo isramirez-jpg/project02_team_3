@@ -38,6 +38,9 @@
     <Button text="Clear"
             onAction="#handleClear"/>
 
+    <Button text="Back to Dashboard"
+            onAction="#handleBackToDashboard"/>
+
     <Label fx:id="messageLabel"/>
 
 </VBox>

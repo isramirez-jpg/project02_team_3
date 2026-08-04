@@ -321,6 +321,7 @@ public class SceneFactory {
 
       CategoryDAO categoryDAO = new CategoryDAO(db);
       controller.setCategoryDAO(categoryDAO);
+      controller.setNavigation(stage, db);
 
       return new Scene(root, 600, 450);
 
