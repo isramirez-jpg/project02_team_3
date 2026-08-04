@@ -41,6 +41,19 @@ public class DatabaseManager {
     }
   }
 
+  // Create Constructor Method with parameter for unit tests
+  public DatabaseManager(Connection sqlconn) {
+    this.sqliteConnection = sqlconn;
+    try {
+      try (Statement createStatement = sqliteConnection.createStatement()) {
+        createStatement.execute("PRAGMA foreign_keys = ON;");
+      }
+      initTables();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
   /**
    * The initTables method is used to create the necessary
    * tables in the database if they do not exist.
