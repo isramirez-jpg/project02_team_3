@@ -24,6 +24,7 @@ public class SceneFactory {
       case MAIN      -> buildMainScene(stage, db);
       case LOGIN     -> buildLoginScene(stage, db);
       case DASHBOARD -> buildDashboardScene(stage, db);
+      case CART -> buildCartScene(stage, db);
     };
   }
 
@@ -64,8 +65,13 @@ public class SceneFactory {
     goButton.setOnAction(e ->
         stage.setScene(create(SceneType.DASHBOARD, stage, db))
     );
+    Button cartButton = new Button("Shopping Cart");
 
-    VBox centerLayout = new VBox(16, title, goButton);
+    cartButton.setOnAction(e ->
+            stage.setScene(create(SceneType.CART, stage, db))
+    );
+
+    VBox centerLayout = new VBox(16, title, goButton, cartButton);
     centerLayout.setAlignment(Pos.CENTER);
 
     BorderPane root = new BorderPane();
@@ -295,5 +301,38 @@ public class SceneFactory {
     return new Scene(layout, 600, 450);
   }
 
-  //endregion
+  /**
+   * Builds the CART scene.
+   *
+   * @param stage the Stage object for the application window
+   * @param db the DatabaseManager instance
+   * @return a new Scene containing the shopping cart UI
+   */
+  private static Scene buildCartScene(Stage stage,
+                                      DatabaseManager db) {
+
+    Label title = new Label("Shopping Cart");
+    title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+    TableView<CartItem> cartTable = new TableView<>();
+
+    TableColumn<CartItem,String> productColumn = new TableColumn<>("Product");
+    TableColumn<CartItem,Integer> quantityColumn = new TableColumn<>("Quantity");
+    TableColumn<CartItem,String> priceColumn = new TableColumn<>("Price");
+    cartTable.getColumns().addAll(productColumn, quantityColumn, priceColumn);
+    Label subtotalLabel = new Label("Subtotal : $0.00");
+    Button backButton = new Button("Back");
+    backButton.setOnAction(e ->
+            stage.setScene(create(SceneType.MAIN, stage, db))
+    );
+
+    VBox layout = new VBox(20, title, cartTable,subtotalLabel, backButton);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(20));
+
+    return new Scene(layout, 600, 450);
+  }
+
+//endregion
 }
+
