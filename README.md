@@ -44,7 +44,7 @@ Issue if the team later decides to attempt it for extra credit._
 ## Code Review Log
 | PR | Author | Human reviewer(s) | AI review (link) | Outcome |
 |----|--------|-------------------|------------------|---------|
-|+14  |Ha Nguyen | Miguel Quezada| <link or commit> | Approved |
+|#14  |Ha Nguyen | Miguel Quezada| <link or commit> | Approved |
 
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
