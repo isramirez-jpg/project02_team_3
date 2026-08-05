@@ -9,6 +9,17 @@ import java.util.List;
 // to brute-force attacks.
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * Manages SQLite database connectivity, foreign key configuration,
+ * and table initialization for the application.
+ *
+ *  @author Ha Nguyen
+ *  @author Isabel Ramirez
+ *  @author Miguel Quezada
+ *  @version 0.1.0
+ *  @since 2026-08-02
+ *
+ */
 public class DatabaseManager {
   private Connection sqliteConnection;
 
@@ -26,6 +37,19 @@ public class DatabaseManager {
     } catch (SQLException e) {
       // If there is an exception during the connection or table initialization,
       // print the stack trace for debugging
+      e.printStackTrace();
+    }
+  }
+
+  // Create Constructor Method with parameter for unit tests
+  public DatabaseManager(Connection sqlconn) {
+    this.sqliteConnection = sqlconn;
+    try {
+      try (Statement createStatement = sqliteConnection.createStatement()) {
+        createStatement.execute("PRAGMA foreign_keys = ON;");
+      }
+      initTables();
+    } catch (SQLException e) {
       e.printStackTrace();
     }
   }
@@ -250,6 +274,56 @@ public class DatabaseManager {
       e.printStackTrace();
     }
     return false;
+  }
+
+  /**
+   * Gets the role for the username passed in from the users table.
+   *
+   * @param username the users username
+   * @return a string containing the role for the username that was passed in
+   */
+  public String getUserRole(String username) {
+    String sqlQuery = "SELECT r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.username = ?";
+    try (PreparedStatement pStatement = sqliteConnection.prepareStatement(sqlQuery)) {
+      pStatement.setString(1, username);
+      ResultSet resultSet = pStatement.executeQuery();
+      if (resultSet.next()) {
+        return resultSet.getString("role_name");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return "USER";
+  }
+
+  /**
+   * Gets all registered users along with their assigned roles from the database.
+   *
+   * @return a list of UserInfo objects that contains user_id, username, email,
+   *         role_name, record creation date and is ordered by user_id.
+   */
+  public List<UserInfo> getAllUsersForAdmin() {
+    List<UserInfo> usersList = new ArrayList<>();
+    String sqlQuery = """
+        SELECT u.user_id, u.username, u.email, r.role_name, u.created_at
+        FROM users u
+        JOIN roles r ON u.role_id = r.role_id
+        ORDER BY u.user_id ASC
+    """;
+    try (Statement ddlStatement = sqliteConnection.createStatement(); ResultSet resultSet = ddlStatement.executeQuery(sqlQuery)) {
+      while (resultSet.next()) {
+        usersList.add(new UserInfo(
+            resultSet.getInt("user_id"),
+            resultSet.getString("username"),
+            resultSet.getString("email"),
+            resultSet.getString("role_name"),
+            resultSet.getString("created_at")
+        ));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return usersList;
   }
 
   /**
