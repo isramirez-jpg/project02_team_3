@@ -121,6 +121,32 @@ public class DatabaseManager {
               created TEXT DEFAULT (DATETIME('now', 'localtime'))
           );
       """);
+
+      // Create categories table
+      ddlStatement.execute("""
+          CREATE TABLE IF NOT EXISTS categories (
+              category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+              category_name TEXT NOT NULL,
+              description TEXT
+          );
+      """);
+
+      // Create products table
+      ddlStatement.execute("""
+          CREATE TABLE IF NOT EXISTS products (
+              product_id INTEGER PRIMARY KEY AUTOINCREMENT,
+              category_id INTEGER NOT NULL,
+              product_name TEXT NOT NULL,
+              description TEXT,
+              price REAL NOT NULL,
+              gender TEXT,
+              color TEXT,
+              size TEXT NOT NULL,
+              stock_quantity INTEGER NOT NULL,
+              image_path TEXT,
+              FOREIGN KEY (category_id) REFERENCES categories(category_id)
+          );
+      """);
     }
   }
 
@@ -372,6 +398,13 @@ public class DatabaseManager {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+
+/**
+  * Gets the active SQLite database connection.
+ */
+  public Connection getConnection() {
+    return sqliteConnection;
   }
 
   /**

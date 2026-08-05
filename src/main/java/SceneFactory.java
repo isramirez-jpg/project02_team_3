@@ -1,3 +1,5 @@
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -41,6 +43,8 @@ public class SceneFactory {
       // Constructs the Admin UI view from its FXML layout
       // and initializes its controller
       case ADMIN_USER_DASHBOARD -> buildAdminScene(stage, db);
+      case DASHBOARD -> buildDashboardScene(stage, db);
+      case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
     };
   }
 
@@ -355,7 +359,12 @@ public class SceneFactory {
         stage.setScene(create(SceneType.MAIN, stage, db))
     );
 
-    HBox navRow = new HBox(backButton);
+    Button addCategoryButton = new Button("Add Category");
+    addCategoryButton.setOnAction(e ->
+            stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
+    );
+
+    HBox navRow = new HBox(8, backButton, addCategoryButton);
     navRow.setAlignment(Pos.CENTER_LEFT);
 
     VBox layout = new VBox(12, title, listView, inputRow, navRow);
@@ -364,6 +373,37 @@ public class SceneFactory {
 
     // change dashboard scene height to 450
     return new Scene(layout, 600, 450);
+  }
+
+  /**
+   * Builds the ADD_CATEGORY scene using an FXML file.
+   */
+  private static Scene buildAddCategoryScene(
+          Stage stage,
+          DatabaseManager db) {
+
+    try {
+      FXMLLoader loader = new FXMLLoader(
+              SceneFactory.class.getResource("/add-category.fxml")
+      );
+
+      Parent root = loader.load();
+
+      AddCategoryController controller = loader.getController();
+
+      CategoryDAO categoryDAO = new CategoryDAO(db);
+      controller.setCategoryDAO(categoryDAO);
+      controller.setNavigation(stage, db);
+
+      return new Scene(root, 600, 450);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException(
+              "Could not load Add Category scene.",
+              e
+      );
+    }
   }
 
   //endregion

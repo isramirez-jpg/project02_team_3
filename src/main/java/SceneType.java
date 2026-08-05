@@ -15,4 +15,6 @@ public enum SceneType {
   ADMIN_TODO_LIST,
   // Added ADMIN scene type for FXML admin view
   ADMIN_USER_DASHBOARD
+  DASHBOARD,
+  ADD_CATEGORY
 }

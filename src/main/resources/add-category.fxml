@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="AddCategoryController"
+      alignment="CENTER"
+      spacing="15">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="Add Product Category"
+           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <Label text="Category Name"/>
+
+    <TextField fx:id="categoryNameField"
+               promptText="Enter category name"
+               maxWidth="300"/>
+
+    <Label text="Description"/>
+
+    <TextArea fx:id="descriptionArea"
+              promptText="Enter category description"
+              prefRowCount="4"
+              maxWidth="300"/>
+
+    <Button text="Save Category"
+            onAction="#handleSaveCategory"/>
+
+    <Button text="Clear"
+            onAction="#handleClear"/>
+
+    <Button text="Back to Dashboard"
+            onAction="#handleBackToDashboard"/>
+
+    <Label fx:id="messageLabel"/>
+
+</VBox>
