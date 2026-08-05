@@ -4,8 +4,14 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 
 /**
- * Main's only jobs: open the database, show the first scend, close the database.
+ * Main's only jobs: open the database, show the first scene close the database.
  * All scene construction is delegated to SceneFactory.
+ *
+ *  @author Ha Nguyen
+ *  @author Isabel Ramirez
+ *  @author Miguel Quezada
+ *  @version 0.1.0
+ *  @since 2026-08-02
  *
  */
 public class Main extends Application {
