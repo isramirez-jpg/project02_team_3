@@ -6,4 +6,5 @@ public enum SceneType {
   MAIN,
   LOGIN,
   DASHBOARD,
+  ADD_CATEGORY
 }
