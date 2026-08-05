@@ -451,13 +451,6 @@ public class DatabaseManager {
     return sqliteConnection;
   }
 
-/**
-  * Gets the active SQLite database connection.
- */
-  public Connection getConnection() {
-    return sqliteConnection;
-  }
-
   /**
    * The close method is used to close the database connection.
    */
