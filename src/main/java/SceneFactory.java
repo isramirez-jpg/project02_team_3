@@ -1,5 +1,3 @@
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -44,6 +42,7 @@ public class SceneFactory {
       // and initializes its controller
       case ADMIN_USER_DASHBOARD -> buildAdminScene(stage, db);
       case DASHBOARD -> buildDashboardScene(stage, db);
+      case CART -> buildCartScene(stage, db);
       case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
     };
   }
@@ -81,6 +80,17 @@ public class SceneFactory {
     Label title = new Label("Welcome to Cache Me Outside Clothing Co.");
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
+    Button goButton = new Button("Open Management Todo List");
+    goButton.setOnAction(e ->
+        stage.setScene(create(SceneType.DASHBOARD, stage, db))
+    );
+    Button cartButton = new Button("Shopping Cart");
+
+    cartButton.setOnAction(e ->
+            stage.setScene(create(SceneType.CART, stage, db))
+    );
+
+    VBox centerLayout = new VBox(16, title, goButton, cartButton);
     VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
 
@@ -376,6 +386,17 @@ public class SceneFactory {
   }
 
   /**
+   * Builds the CART scene.
+   *
+   * @param stage the Stage object for the application window
+   * @param db the DatabaseManager instance
+   * @return a new Scene containing the shopping cart UI
+   */
+  private static Scene buildCartScene(Stage stage,
+                                      DatabaseManager db) {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+              SceneFactory.class.getResource("/Cart.fxml")
    * Builds the ADD_CATEGORY scene using an FXML file.
    */
   private static Scene buildAddCategoryScene(
@@ -388,6 +409,45 @@ public class SceneFactory {
       );
 
       Parent root = loader.load();
+
+      CartController controller =
+              loader.getController();
+
+      controller.setApplicationData(stage, db);
+
+      return new Scene(root, 600, 450);
+
+    } catch (IOException e) {
+      throw new IllegalStateException(
+              "Unable to load Cart.fxml.",
+              e
+      );
+    }
+
+    //Label title = new Label("Shopping Cart");
+    //title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+    //TableView<CartItem> cartTable = new TableView<>();
+
+    //TableColumn<CartItem,String> productColumn = new TableColumn<>("Product");
+    //TableColumn<CartItem,Integer> quantityColumn = new TableColumn<>("Quantity");
+    //TableColumn<CartItem,String> priceColumn = new TableColumn<>("Price");
+    //cartTable.getColumns().addAll(productColumn, quantityColumn, priceColumn);
+    //Label subtotalLabel = new Label("Subtotal : $0.00");
+    //Button backButton = new Button("Back");
+    //backButton.setOnAction(e ->
+      //      stage.setScene(create(SceneType.MAIN, stage, db))
+    //);
+
+    //VBox layout = new VBox(20, title, cartTable,subtotalLabel, backButton);
+    //layout.setAlignment(Pos.CENTER);
+    //layout.setPadding(new Insets(20));
+
+    //return new Scene(layout, 600, 450);
+  }
+
+//endregion
+}
 
       AddCategoryController controller = loader.getController();
 

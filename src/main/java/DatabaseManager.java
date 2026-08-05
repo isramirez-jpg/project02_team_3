@@ -85,6 +85,51 @@ public class DatabaseManager {
           );
       """);
 
+      // Create the Carts table
+      ddlStatement.execute("""
+    CREATE TABLE IF NOT EXISTS carts (
+        cart_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'ACTIVE'
+            CHECK (status IN ('ACTIVE', 'COMPLETED')),
+        created_at TEXT NOT NULL
+            DEFAULT (DATETIME('now', 'localtime')),
+        updated_at TEXT NOT NULL
+            DEFAULT (DATETIME('now', 'localtime')),
+        FOREIGN KEY (user_id)
+            REFERENCES users(user_id)
+            ON DELETE CASCADE
+    );
+""");
+      // Create the Cart Items table
+      ddlStatement.execute("""
+    CREATE TABLE IF NOT EXISTS cart_items (
+        cart_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cart_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL
+            CHECK (quantity >= 1),
+        unit_price DECIMAL(10, 2) NOT NULL
+            CHECK (unit_price >= 0),
+        added_at TEXT NOT NULL
+            DEFAULT (DATETIME('now', 'localtime')),
+        UNIQUE (cart_id, product_id),
+        FOREIGN KEY (cart_id)
+            REFERENCES carts(cart_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (product_id)
+            REFERENCES products(product_id)
+            ON DELETE RESTRICT
+    );
+""");
+      // Allow each user to have only one active cart
+      ddlStatement.execute("""
+    CREATE UNIQUE INDEX IF NOT EXISTS
+        one_active_cart_per_user
+    ON carts(user_id)
+    WHERE status = 'ACTIVE';
+""");
+
       // Create the Customers table
       ddlStatement.execute("""
           CREATE TABLE IF NOT EXISTS customers (
@@ -398,6 +443,12 @@ public class DatabaseManager {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+  /**
+   * Returns the SQLite connection for DAO classes.
+   */
+  public Connection getConnection() {
+    return sqliteConnection;
   }
 
 /**

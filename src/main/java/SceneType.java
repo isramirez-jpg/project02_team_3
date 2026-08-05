@@ -16,5 +16,6 @@ public enum SceneType {
   // Added ADMIN scene type for FXML admin view
   ADMIN_USER_DASHBOARD
   DASHBOARD,
+  CART,
   ADD_CATEGORY
 }
