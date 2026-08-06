@@ -395,7 +395,7 @@ public class SceneFactory {
       FXMLLoader loader = new FXMLLoader(SceneFactory.class.getResource("/Cart.fxml"));
       Parent root = loader.load();
       CartController controller = loader.getController();
-      controller.setApplicationData(stage, db);
+      controller.setApplicationData(stage, db, currentUser);
       return new Scene(root, 600, 450);
     } catch (IOException e) {
       throw new IllegalStateException("Unable to load Cart.fxml.", e);
