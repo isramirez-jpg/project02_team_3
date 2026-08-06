@@ -252,4 +252,7 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+# Local SQLite database
+app.db
+
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij,macos,windows
