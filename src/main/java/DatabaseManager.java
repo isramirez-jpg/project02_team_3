@@ -398,6 +398,37 @@ public class DatabaseManager {
   }
 
   /**
+   * Retrieves the user ID associated with the specified username.
+   *
+   * @param username the username to search for
+   * @return the user's database ID if found, otherwise -1
+   */
+  public int getUserIdByUsername(String username) {
+    String sql = """
+            SELECT user_id
+            FROM users
+            WHERE username = ?
+            """;
+
+    try (PreparedStatement statement =
+                 sqliteConnection.prepareStatement(sql)) {
+
+      statement.setString(1, username);
+
+      try (ResultSet resultSet = statement.executeQuery()) {
+        if (resultSet.next()) {
+          return resultSet.getInt("user_id");
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return -1;
+  }
+
+  /**
    * The getAllItems method is used to get all the items from the items table
    *
    * @return a list of all items in the items table
