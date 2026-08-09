@@ -91,12 +91,12 @@ public class SceneFactory {
             stage.setScene(create(SceneType.CART, stage, db))
     );
 
-    Button cartButton = new Button("Browse Product");
-    cartButton.setOnAction(e ->
+    Button browseProductButton = new Button("Browse Product");
+    browseProductButton.setOnAction(e ->
             stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
 
-    VBox centerLayout = new VBox(16, title, goButton, cartButton);
+    VBox centerLayout = new VBox(16, title, goButton, cartButton, browseProductButton);
     //VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
@@ -381,7 +381,12 @@ public class SceneFactory {
             stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
     );
 
-    HBox navRow = new HBox(8, backButton, addCategoryButton);
+    Button browseProductButton = new Button("Browse Product");
+    browseProductButton.setOnAction(e ->
+            stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
+    );
+
+    HBox navRow = new HBox(8, backButton, addCategoryButton, browseProductButton);
     navRow.setAlignment(Pos.CENTER_LEFT);
 
     VBox layout = new VBox(12, title, listView, inputRow, navRow);
