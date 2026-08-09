@@ -44,6 +44,7 @@ public class SceneFactory {
       case DASHBOARD -> buildDashboardScene(stage, db);
       case CART -> buildCartScene(stage, db);
       case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
+      case BROWSE_PRODUCT -> buildBrowseProduct(stage,db);
     };
   }
 
@@ -419,6 +420,23 @@ public class SceneFactory {
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException("Could not load Add Category scene.", e);
+    }
+  }
+
+  /**
+   * Builds the BROWSE_PRODUCT scene using browse-product.fxml.
+   */
+  private static Scene buildBrowseProduct(Stage stage, DatabaseManager db) {
+    try {
+      FXMLLoader loader = new FXMLLoader(SceneFactory.class.getResource("/browse-product.fxml"));
+      Parent root = loader.load();
+
+      BrowseProductController controller = loader.getController();
+      controller.setApplicationData(stage, db);
+
+      return new Scene(root, 600, 450);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to load browse-product.fxml.", e);
     }
   }
 
