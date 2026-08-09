@@ -7,7 +7,9 @@ import java.util.List;
 /**
  * Name: Ha Nguyen
  * Date: 8/8/2026
- * Explanation:  This controller loads available products from the database through
+ *
+ * Explanation:
+ * This controller loads available products from the database through
  * ProductDAO and displays them in the browse-product user interface.
  * It also handles navigation back to the main scene.
  */
@@ -19,6 +21,9 @@ public class BrowseProductController {
     @FXML
     private ListView<Product> productListView;
 
+    /**
+     * Sets the application data needed by this controller.
+     */
     public void setApplicationData(Stage stage, DatabaseManager db) {
         this.stage = stage;
         this.db = db;
@@ -27,11 +32,18 @@ public class BrowseProductController {
         loadProducts();
     }
 
+    /**
+     * Loads all products from the database and displays them
+     * in the product list.
+     */
     private void loadProducts() {
         List<Product> products = productDAO.getAll();
         productListView.getItems().setAll(products);
     }
 
+    /**
+     * Return to the main scene.
+     */
     @FXML
     private void handleBack() {
         stage.setScene(

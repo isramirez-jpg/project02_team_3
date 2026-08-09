@@ -91,6 +91,11 @@ public class SceneFactory {
             stage.setScene(create(SceneType.CART, stage, db))
     );
 
+    Button cartButton = new Button("Browse Product");
+    cartButton.setOnAction(e ->
+            stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
+    );
+
     VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title);
