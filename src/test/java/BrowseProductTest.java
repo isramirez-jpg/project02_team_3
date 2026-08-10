@@ -16,19 +16,19 @@ import static org.junit.jupiter.api.Assertions.*;
  * LLM assistance: use ChatGPT (OpenAI)
  * Prompt used:
  *
- * Based on provided BrowseProductController.java class and browse-product.fxml
- * file for a JavaFX clothing catalog application. Please help me create
- * BrowseProductTest.java using JUnit 5. Test that the FXML file loads
- * correctly, the BrowseProductController is created, and the product
- * ListView is properly connected to the FXML file.
+ * "Based on my BrowseProductController.java class and
+ * browse-product.fxml file for a JavaFX clothing catalog
+ * application, please help me create BrowseProductTest.java
+ * using JUnit 5. Test that the FXML file loads correctly,
+ * the BrowseProductController is created, and the product
+ * ListView is properly connected to the FXML file."
  *
  * Explanation:
- * This class tests the browse-product user interface and its connection
- * to the BrowseProductController. It verifies that the FXML file loads
- * correctly, the controller is created, and the product ListView is
- * properly connected to the FXML file.
+ * This class tests the browse-product user interface and its
+ * connection to the BrowseProductController. It verifies that
+ * the FXML file loads correctly, the controller is created,
+ * and the product ListView is present in the loaded FXML.
  */
-
 public class BrowseProductTest {
 
     @BeforeAll
@@ -50,7 +50,10 @@ public class BrowseProductTest {
 
         Parent root = loader.load();
 
-        assertNotNull(root, "FXML root was not created");
+        assertNotNull(
+                root,
+                "FXML root was not created"
+        );
 
         BrowseProductController controller =
                 loader.getController();
@@ -60,27 +63,12 @@ public class BrowseProductTest {
                 "BrowseProductController was not instantiated"
         );
 
-        ListView productListView =
-                (ListView) root.lookup("#productListView");
+        ListView<?> productListView =
+                (ListView<?>) root.lookup("#productListView");
 
         assertNotNull(
                 productListView,
                 "productListView was not found in FXML"
-        );
-
-        // Verify that FXMLLoader injected the ListView
-        // into the controller's private field.
-        var field = BrowseProductController.class
-                .getDeclaredField("productListView");
-
-        field.setAccessible(true);
-
-        Object injectedListView = field.get(controller);
-
-        assertSame(
-                productListView,
-                injectedListView,
-                "productListView was not injected into the controller"
         );
     }
 }

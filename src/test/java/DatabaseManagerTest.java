@@ -22,7 +22,7 @@ public class DatabaseManagerTest {
 
     // Setup a mock test user using the registerUser method which handles
     // BCrypt hashing automatically.
-    databaseManager.registerUser(
+    databaseManager.getUserDAO().registerUser(
         "Sonicsfan94",
         "testPasswordLongLiveRockNRoll12!",
         "eddie@pearljam.com",
@@ -48,7 +48,11 @@ public class DatabaseManagerTest {
     String inputPassword = "testPasswordLongLiveRockNRoll12!";
 
     // Execute the authenticateUser method using the test user
-    boolean isTheUserAuthenticated = databaseManager.authenticateUser(username, inputPassword);
+    boolean isTheUserAuthenticated =
+            databaseManager.getUserDAO().authenticateUser(
+                    username,
+                    inputPassword
+            );
 
     // Assert that authentication succeeds
     assertTrue(isTheUserAuthenticated, "Authentication should succeed for valid username and password.");
