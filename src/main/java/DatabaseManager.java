@@ -23,17 +23,28 @@ import org.mindrot.jbcrypt.BCrypt;
 public class DatabaseManager {
   private Connection sqliteConnection;
 
+  // 08/08/2026 – MQ – DAO Refactor – DAO instance variables
+  private UserDAO userDAO;
+  private CustomerDAO customerDAO;
+  private ItemDAO itemDAO;
+
   public DatabaseManager() {
     try {
       // Establish SQLite connection
       sqliteConnection = DriverManager.getConnection("jdbc:sqlite:app.db");
 
       // Enable Foreign Keys in SQLite
-      try (Statement stmt = sqliteConnection.createStatement()) {
-        stmt.execute("PRAGMA foreign_keys = ON;");
+      try (Statement ddlStatement = sqliteConnection.createStatement()) {
+        ddlStatement.execute("PRAGMA foreign_keys = ON;");
       }
       // Initialize the database tables if they do not exist
       initTables();
+
+      // 08/08/2026 – MQ – DAO Refactor – Instantiate DAOs
+      this.userDAO = new UserDAO(sqliteConnection);
+      this.customerDAO = new CustomerDAO(sqliteConnection);
+      this.itemDAO = new ItemDAO(sqliteConnection);
+
     } catch (SQLException e) {
       // If there is an exception during the connection or table initialization,
       // print the stack trace for debugging
@@ -195,206 +206,17 @@ public class DatabaseManager {
     }
   }
 
-  /**
-   * The registerUser method is used to register a new user in the database,
-   * including their profile and address information
-   *
-   * @param username  the username for the new user
-   * @param password  the plain-text password for the new user (will be hashed before storage)
-   * @param email     the email address for the new user
-   * @param firstName the first name of the new user
-   * @param lastName  the last name of the new user
-   * @param phone     the phone number of the new user
-   * @param street    the street address of the new user
-   * @param city      the city of the new user
-   * @param state     the state/province of the new user
-   * @param zip       the ZIP/postal code of the new user
-   * @param roleName  the role name to assign to the new user (e.g., "USER", "ADMIN")
-   * @return true if the user was successfully registered, otherwise false
-   */
-  public boolean registerUser(String username, String password, String email,
-      String firstName, String lastName, String phone, String street,
-      String city, String state, String zip, String roleName) {
-
-    String insertUserSql = "INSERT INTO users (username, password_hash, email, role_id) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name = ?));";
-    String insertCustomerSql = "INSERT INTO customers (user_id, first_name, last_name, phone) VALUES (?, ?, ?, ?);";
-    String insertAddressSql = "INSERT INTO addresses (customer_id, street, city, state, zip_code) VALUES (?, ?, ?, ?, ?);";
-
-    try {
-      // Begin Transaction
-      sqliteConnection.setAutoCommit(false);
-
-      // Insert User
-      long userId = -1;
-      try (PreparedStatement pStatement = sqliteConnection.prepareStatement(insertUserSql, Statement.RETURN_GENERATED_KEYS)) {
-        pStatement.setString(1, username);
-        // Hash and salt password using BCrypt before saving it to the database
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        // Set the hashed password
-        pStatement.setString(2, hashedPassword);
-        pStatement.setString(3, email);
-        pStatement.setString(4, roleName);
-        pStatement.executeUpdate();
-
-        ResultSet rs = pStatement.getGeneratedKeys();
-        if (rs.next()) {
-          userId = rs.getLong(1);
-        }
-      }
-
-      if (userId == -1) {
-        sqliteConnection.rollback();
-        return false;
-      }
-
-      // Insert Customer Profile
-      long customerId = -1;
-      try (PreparedStatement pStatement = sqliteConnection.prepareStatement(insertCustomerSql, Statement.RETURN_GENERATED_KEYS)) {
-        pStatement.setLong(1, userId);
-        pStatement.setString(2, firstName);
-        pStatement.setString(3, lastName);
-        pStatement.setString(4, phone);
-        pStatement.executeUpdate();
-
-        ResultSet rs = pStatement.getGeneratedKeys();
-        if (rs.next()) {
-          customerId = rs.getLong(1);
-        }
-      }
-
-      if (customerId == -1) {
-        sqliteConnection.rollback();
-        return false;
-      }
-
-      // Insert Address
-      try (PreparedStatement pStatement = sqliteConnection.prepareStatement(insertAddressSql)) {
-        pStatement.setLong(1, customerId);
-        pStatement.setString(2, street);
-        pStatement.setString(3, city);
-        pStatement.setString(4, state);
-        pStatement.setString(5, zip);
-        pStatement.executeUpdate();
-      }
-
-      // Commit Transaction
-      sqliteConnection.commit();
-      return true;
-
-    } catch (SQLException e) {
-      try {
-        sqliteConnection.rollback();
-      } catch (SQLException rollbackEx) {
-        rollbackEx.printStackTrace();
-      }
-      e.printStackTrace();
-      return false;
-    } finally {
-      try {
-        sqliteConnection.setAutoCommit(true);
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
+  // 08/08/2026 – MQ – DAO Refactor – Getter methods for DAOs
+  public UserDAO getUserDAO() {
+    return userDAO;
   }
 
-  /**
-   * The authenticateUser method is used to verify user credentials.
-   *
-   * @param username  the username for the new user
-   * @param password  the plain-text password for the new user (will be hashed before storage)
-   * @return true if the user was successfully authenticated, otherwise false
-   */
-  public boolean authenticateUser(String username, String password) {
-    String sql = "SELECT password_hash FROM users WHERE username = ? AND is_active = 1";
-    try (PreparedStatement pStatement = sqliteConnection.prepareStatement(sql)) {
-      pStatement.setString(1, username);
-      ResultSet rs = pStatement.executeQuery();
-      if (rs.next()) {
-        String storedPassword = rs.getString("password_hash");
-        // Verify the plain text password against the stored BCrypt hash
-        return BCrypt.checkpw(password, storedPassword);
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return false;
+  public CustomerDAO getCustomerDAO() {
+    return customerDAO;
   }
 
-  /**
-   * Gets the role for the username passed in from the users table.
-   *
-   * @param username the users username
-   * @return a string containing the role for the username that was passed in
-   */
-  public String getUserRole(String username) {
-    String sqlQuery = "SELECT r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.username = ?";
-    try (PreparedStatement pStatement = sqliteConnection.prepareStatement(sqlQuery)) {
-      pStatement.setString(1, username);
-      ResultSet resultSet = pStatement.executeQuery();
-      if (resultSet.next()) {
-        return resultSet.getString("role_name");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return "USER";
-  }
-
-  /**
-   * Gets all registered users along with their assigned roles from the database.
-   *
-   * @return a list of UserInfo objects that contains user_id, username, email,
-   *         role_name, record creation date and is ordered by user_id.
-   */
-  public List<UserInfo> getAllUsersForAdmin() {
-    List<UserInfo> usersList = new ArrayList<>();
-    String sqlQuery = """
-        SELECT u.user_id, u.username, u.email, r.role_name, u.created_at
-        FROM users u
-        JOIN roles r ON u.role_id = r.role_id
-        ORDER BY u.user_id ASC
-    """;
-    try (Statement ddlStatement = sqliteConnection.createStatement(); ResultSet resultSet = ddlStatement.executeQuery(sqlQuery)) {
-      while (resultSet.next()) {
-        usersList.add(new UserInfo(
-            resultSet.getInt("user_id"),
-            resultSet.getString("username"),
-            resultSet.getString("email"),
-            resultSet.getString("role_name"),
-            resultSet.getString("created_at")
-        ));
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return usersList;
-  }
-
-  /**
-   * The getCustomerNameByUsername method is used to get the
-   * first and last name for username passed in from the customers table.
-   *
-   * @param username  the username for the user
-   * @return a string displaying the first name concatenated with a space and last name.
-   */
-  public String getCustomerNameByUsername(String username) {
-    String sql = """
-        SELECT c.first_name, c.last_name 
-        FROM customers c 
-        JOIN users u ON c.user_id = u.user_id 
-        WHERE u.username = ?
-    """;
-    try (PreparedStatement pStatement = sqliteConnection.prepareStatement(sql)) {
-      pStatement.setString(1, username);
-      ResultSet rs = pStatement.executeQuery();
-      if (rs.next()) {
-        return rs.getString("first_name") + " " + rs.getString("last_name");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return "Guest";
+  public ItemDAO getItemDAO() {
+    return itemDAO;
   }
 
   /**
@@ -411,7 +233,7 @@ public class DatabaseManager {
             """;
 
     try (PreparedStatement statement =
-                 sqliteConnection.prepareStatement(sql)) {
+        sqliteConnection.prepareStatement(sql)) {
 
       statement.setString(1, username);
 
@@ -428,53 +250,6 @@ public class DatabaseManager {
     return -1;
   }
 
-  /**
-   * The getAllItems method is used to get all the items from the items table
-   *
-   * @return a list of all items in the items table
-   */
-  public List<String> getAllItems() {
-    List<String> items = new ArrayList<>();
-    String sql = "SELECT name FROM items ORDER BY id DESC";
-    try (Statement stmt = sqliteConnection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-      while (rs.next()) {
-        items.add(rs.getString("name"));
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return items;
-  }
-
-  /**
-   * The insertItem method is used to insert a new item into the items table.
-   *
-   * @param name the name of the item to insert
-   */
-  public void insertItem(String name) {
-    String sql = "INSERT INTO items(name) VALUES(?)";
-    try (PreparedStatement pStatement = sqliteConnection.prepareStatement(sql)) {
-      pStatement.setString(1, name);
-      pStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * The deleteItem method is used to remove selected item from items table.
-   *
-   * @param name the name of the item to delete
-   */
-  public void deleteItem(String name) {
-    String sql = "DELETE FROM items WHERE name = ?";
-    try (PreparedStatement pStatement = sqliteConnection.prepareStatement(sql)) {
-      pStatement.setString(1, name);
-      pStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
   /**
    * Returns the SQLite connection for DAO classes.
    */
