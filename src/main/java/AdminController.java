@@ -36,7 +36,8 @@ public class AdminController {
   public void initData(Stage stage, DatabaseManager db) {
     this.stage = stage;
     this.db = db;
-    usersTable.setItems(FXCollections.observableArrayList(db.getAllUsersForAdmin()));
+    // 08/08/2026 – MQ – DAO Refactor – Delegate user fetching to UserDAO
+    usersTable.setItems(FXCollections.observableArrayList(db.getUserDAO().getAllUsersForAdmin()));
   }
 
   /**

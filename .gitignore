@@ -39,6 +39,11 @@ build/
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+# Allow shared Database Tool Window configs
+!.idea/dataSources.xml
+!.idea/dataSources/
+!.idea/dataSources/*.xml
+
 # Gradle
 .idea/**/gradle.xml
 
