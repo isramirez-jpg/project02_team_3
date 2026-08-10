@@ -58,7 +58,8 @@ public class SceneFactory {
    */
   private static Scene buildMainScene(Stage stage, DatabaseManager db) {
     // Fetch first and last name from database
-    String fullName = (currentUser != null) ? db.getCustomerNameByUsername(currentUser) : "Guest";
+    // 08/08/2026 – MQ – DAO Refactor – Fetch customer name using CustomerDAO
+    String fullName = (currentUser != null) ? db.getCustomerDAO().getCustomerNameByUsername(currentUser) : "Guest";
     Label loggedInLabel = new Label("User Currently Logged in:\n" + fullName);
     loggedInLabel.setStyle("-fx-font-weight: bold;");
 
@@ -80,24 +81,20 @@ public class SceneFactory {
     Label title = new Label("Welcome to Cache Me Outside Clothing Co.");
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-    Button goButton = new Button("Open Management Todo List");
-    goButton.setOnAction(e ->
-        stage.setScene(create(SceneType.DASHBOARD, stage, db))
-    );
-
     Button cartButton = new Button("Shopping Cart");
     cartButton.setOnAction(e ->
-            stage.setScene(create(SceneType.CART, stage, db))
+        stage.setScene(create(SceneType.CART, stage, db))
     );
 
-    VBox centerLayout = new VBox(16, title, goButton, cartButton);
+    VBox centerLayout = new VBox(16, title, cartButton);
     //VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
 
     // Only show the Admin To do List button if the
     // current logged-in user has ADMIN role
-    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserRole(currentUser))) {
+    // 08/08/2026 – MQ – DAO Refactor – Fetch user role using UserDAO
+    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
       Button managementTodoListButton = new Button("Admin Todo List");
       managementTodoListButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
       managementTodoListButton.setOnAction(e ->
@@ -108,7 +105,8 @@ public class SceneFactory {
 
     // Only show the Admin User Dashboard button if the
     // current logged-in user has ADMIN role
-    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserRole(currentUser))) {
+    // 08/08/2026 – MQ – DAO Refactor – Fetch user role using UserDAO
+    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
       Button adminButton = new Button("Admin User Dashboard");
       adminButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
       adminButton.setOnAction(e -> stage.setScene(create(SceneType.ADMIN_USER_DASHBOARD, stage, db)));
@@ -277,7 +275,8 @@ public class SceneFactory {
         }
 
         // save boolean success value
-        boolean success = db.registerUser(user, pass, email, firstName, lastName, phone, street, city, state, zip, role);
+        // 08/08/2026 – MQ – DAO Refactor – Delegate registration to UserDAO
+        boolean success = db.getUserDAO().registerUser(user, pass, email, firstName, lastName, phone, street, city, state, zip, role);
         if (success) {
           // Set currentUser session after registration
           currentUser = user;
@@ -288,7 +287,8 @@ public class SceneFactory {
         }
       } else {
         // if logging in, and username and password are good, authenticate the user
-        if (db.authenticateUser(user, pass)) {
+        // 08/08/2026 – MQ – DAO Refactor – Delegate authentication to UserDAO
+        if (db.getUserDAO().authenticateUser(user, pass)) {
           // Set the currentUser session after login
           currentUser = user;
           stage.setScene(create(SceneType.MAIN, stage, db));
@@ -335,7 +335,8 @@ public class SceneFactory {
     title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
     ListView<String> listView = new ListView<>();
-    listView.getItems().addAll(db.getAllItems());
+    // 08/08/2026 – MQ – DAO Refactor – Delegate item loading to ItemDAO
+    listView.getItems().addAll(db.getItemDAO().getAllItems());
 
     TextField inputField = new TextField();
     inputField.setPromptText("New todo...");
@@ -345,8 +346,9 @@ public class SceneFactory {
     addButton.setOnAction(e -> {
       String text = inputField.getText().trim();
       if (!text.isEmpty()) {
-        db.insertItem(text);
-        listView.getItems().setAll(db.getAllItems());
+        // 08/08/2026 – MQ – DAO Refactor – Delegate item creation to ItemDAO
+        db.getItemDAO().insertItem(text);
+        listView.getItems().setAll(db.getItemDAO().getAllItems());
         inputField.clear();
       }
     });
@@ -356,8 +358,9 @@ public class SceneFactory {
     deleteButton.setOnAction(e -> {
       String selectedItem = listView.getSelectionModel().getSelectedItem();
       if (selectedItem != null) {
-        db.deleteItem(selectedItem);
-        listView.getItems().setAll(db.getAllItems());
+        // 08/08/2026 – MQ – DAO Refactor – Delegate item deletion to ItemDAO
+        db.getItemDAO().deleteItem(selectedItem);
+        listView.getItems().setAll(db.getItemDAO().getAllItems());
       }
     });
 
@@ -372,7 +375,7 @@ public class SceneFactory {
 
     Button addCategoryButton = new Button("Add Category");
     addCategoryButton.setOnAction(e ->
-            stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
+        stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
     );
 
     HBox navRow = new HBox(8, backButton, addCategoryButton);
