@@ -416,44 +416,51 @@ public class SceneFactory {
     }
   }
   /**
-   * Builds the CHECKOUT scene.
-   *
-   * @param stage the Stage object for the application window
-   * @param db the DatabaseManager instance
-   * @return a new checkout Scene
+   * Builds the CHECKOUT scene using Checkout.fxml.
    */
   private static Scene buildCheckoutScene(
           Stage stage,
           DatabaseManager db
   ) {
-    Label title = new Label("Checkout");
-    title.setStyle(
-            "-fx-font-size: 20px; -fx-font-weight: bold;"
-    );
+    try {
 
-    Button backButton = new Button("Back to Cart");
+      int userId =
+              db.getUserIdByUsername(currentUser);
 
-    backButton.setOnAction(e ->
-            stage.setScene(
-                    create(
-                            SceneType.CART,
-                            stage,
-                            db
-                    )
-            )
-    );
+      CartDao cartDao =
+              new CartDao(db);
 
-    VBox layout = new VBox(
-            16,
-            title,
-            backButton
-    );
+      Cart activeCart =
+              cartDao.getOrCreateActiveCart(userId);
 
-    layout.setAlignment(Pos.CENTER);
-    layout.setPadding(new Insets(24));
+      FXMLLoader loader =
+              new FXMLLoader(
+                      SceneFactory.class.getResource(
+                              "/Checkout.fxml"
+                      )
+              );
 
-    return new Scene(layout, 600, 450);
+      Parent root = loader.load();
+
+      CheckoutController controller =
+              loader.getController();
+
+      controller.setApplicationData(
+              stage,
+              db,
+              activeCart.getCartId()
+      );
+
+      return new Scene(root, 600, 450);
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      return buildCartScene(stage, db);
+    }
   }
+
 
   /**
    * Builds the ADD_CATEGORY scene using add-category.fxml.

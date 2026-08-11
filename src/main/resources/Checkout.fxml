@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="CheckoutController"
+      alignment="CENTER"
+      spacing="16">
+
+    <padding>
+        <Insets top="24"
+                right="24"
+                bottom="24"
+                left="24"/>
+    </padding>
+
+    <Label text="Checkout"
+           style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <Label text="Review your cart before placing your order."/>
+
+    <Label fx:id="statusLabel"/>
+
+    <Button text="Place Order"
+            onAction="#handlePlaceOrder"/>
+
+    <Button text="Back to Cart"
+            onAction="#handleBack"/>
+
+</VBox>
