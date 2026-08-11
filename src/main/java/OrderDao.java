@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 
 /**
@@ -34,6 +35,12 @@ public class OrderDao {
             int userId,
             BigDecimal totalAmount
     ) throws SQLException {
+        if (totalAmount == null
+                || totalAmount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(
+                    "Total amount cannot be negative."
+            );
+        }
 
         String sql = """
                 INSERT INTO orders
@@ -152,6 +159,102 @@ public class OrderDao {
 
         return Optional.empty();
     }
+    /**
+     * Retrieves all orders belonging to a user.
+     *
+     * @param userId the ID of the user
+     * @return a list of the user's orders
+     * @throws SQLException if the query fails
+     */
+    public List<Order> findByUserId(int userId)
+            throws SQLException {
+
+        List<Order> orders = new ArrayList<>();
+
+        String sql = """
+            SELECT order_id,
+                   user_id,
+                   total_amount,
+                   status,
+                   created_at
+            FROM orders
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            """;
+
+        try (PreparedStatement statement =
+                     db.getConnection().prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet results = statement.executeQuery()) {
+                while (results.next()) {
+                    orders.add(
+                            new Order(
+                                    results.getInt("order_id"),
+                                    results.getInt("user_id"),
+                                    results.getBigDecimal("total_amount"),
+                                    results.getString("status"),
+                                    results.getString("created_at")
+                            )
+                    );
+                }
+            }
+        }
+
+        return orders;
+    }
+    /**
+     * Retrieves all items that belong to an order.
+     *
+     * @param orderId the ID of the order
+     * @return a list of OrderItem objects for the order
+     * @throws SQLException if the query fails
+     */
+    public List<OrderItem> findItemsByOrderId(int orderId)
+            throws SQLException {
+
+        List<OrderItem> items = new ArrayList<>();
+
+        String sql = """
+            SELECT oi.order_item_id,
+                   oi.order_id,
+                   oi.product_id,
+                   p.product_name,
+                   oi.unit_price,
+                   oi.quantity
+            FROM order_items oi
+            JOIN products p
+              ON oi.product_id = p.product_id
+            WHERE oi.order_id = ?
+            ORDER BY oi.order_item_id
+            """;
+
+        try (PreparedStatement statement =
+                     db.getConnection().prepareStatement(sql)) {
+
+            statement.setInt(1, orderId);
+
+            try (ResultSet results = statement.executeQuery()) {
+
+                while (results.next()) {
+
+                    items.add(
+                            new OrderItem(
+                                    results.getInt("order_item_id"),
+                                    results.getInt("order_id"),
+                                    results.getInt("product_id"),
+                                    results.getString("product_name"),
+                                    results.getBigDecimal("unit_price"),
+                                    results.getInt("quantity")
+                            )
+                    );
+                }
+            }
+        }
+
+        return items;
+    }
 
     /**
      * Converts an active shopping cart into a completed order.
@@ -269,6 +372,13 @@ public class OrderDao {
             int orderId,
             String status
     ) throws SQLException {
+        if (!status.equals("PENDING")
+                && !status.equals("COMPLETED")
+                && !status.equals("CANCELLED")) {
+            throw new IllegalArgumentException(
+                    "Invalid order status: " + status
+            );
+        }
 
         String sql = """
             UPDATE orders
