@@ -56,8 +56,9 @@ Issue if the team later decides to attempt it for extra credit._
 
 
 ## AI Usage Log
-- **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
-- **AI code reviews:** <PR link + adjudication note> — per owner.
+
+- AI-drafted tests: <link to TESTING.md / commit> — per owner.
+- AI code review: [PR #21](https://github.com/isramirez-jpg/project02_team_3/pull/21) — feedback reviewed and applicable checkout error-handling and transaction-safety recommendations implemented by the slice owner.
 
 ## Extra Credit Log
 | Item | Who | Evidence (Issue/PR) |
