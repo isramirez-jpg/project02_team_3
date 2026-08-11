@@ -2,7 +2,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.sql.SQLException;
 
 /**
@@ -13,12 +17,17 @@ import java.sql.SQLException;
  */
 public class CheckoutController {
 
+    private static final Logger LOGGER =
+            Logger.getLogger(CheckoutController.class.getName());
     @FXML
     private Label statusLabel;
 
     private Stage stage;
     private DatabaseManager db;
     private int cartId;
+
+    @FXML
+    private Button placeOrderButton;
 
     /**
      * Receives the application dependencies and active cart ID.
@@ -42,6 +51,7 @@ public class CheckoutController {
      */
     @FXML
     private void handlePlaceOrder() {
+        placeOrderButton.setDisable(true);
 
         OrderDao orderDao = new OrderDao(db);
 
@@ -67,13 +77,33 @@ public class CheckoutController {
                             db
                     )
             );
-
-        } catch (SQLException | RuntimeException e) {
+        } catch (SQLException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Database error while checking out cart " + cartId,
+                    e
+            );
 
             statusLabel.setText(
-                    "Checkout failed: " + e.getMessage()
+                    "Checkout failed. Please try again."
             );
             statusLabel.setStyle("-fx-text-fill: red;");
+
+            placeOrderButton.setDisable(false);
+
+        } catch (IllegalStateException | IllegalArgumentException e) {
+
+            LOGGER.log(
+                    Level.WARNING,
+                    "Checkout validation failed for cart " + cartId,
+                    e
+            );
+            statusLabel.setText(
+                    "Checkout could not be completed."
+            );
+            statusLabel.setStyle("-fx-text-fill: red;");
+
+            placeOrderButton.setDisable(false);
         }
     }
 
@@ -90,4 +120,5 @@ public class CheckoutController {
                 )
         );
     }
+
 }

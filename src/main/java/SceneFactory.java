@@ -13,6 +13,9 @@ import javafx.scene.Parent;
 // Import the Image and ImageView classes to load and display images
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.sql.SQLException;
 
 /**
  * Builds and returns Scene objects on demand.
@@ -28,6 +31,8 @@ import javafx.scene.image.ImageView;
  *  @since 2026-08-02
  */
 public class SceneFactory {
+  private static final Logger LOGGER =
+          Logger.getLogger(SceneFactory.class.getName());
 
   //  Used to track active logged in user
   private static String currentUser = null;
@@ -423,6 +428,18 @@ public class SceneFactory {
           DatabaseManager db
   ) {
     try {
+      if (currentUser == null) {
+
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Login Required");
+        alert.setHeaderText(
+                "You must be logged in to check out."
+        );
+
+        alert.showAndWait();
+
+        return buildLoginScene(stage, db);
+      }
 
       int userId =
               db.getUserIdByUsername(currentUser);
@@ -453,12 +470,47 @@ public class SceneFactory {
 
       return new Scene(root, 600, 450);
 
-    } catch (Exception e) {
+    } catch (IOException e) {
 
-      e.printStackTrace();
+      LOGGER.log(
+              Level.SEVERE,
+              "Unable to load Checkout.fxml",
+              e
+      );
+
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Checkout Error");
+      alert.setHeaderText(
+              "Checkout could not be opened."
+      );
+      alert.setContentText(
+              "You will be returned to your shopping cart."
+      );
+
+      alert.showAndWait();
 
       return buildCartScene(stage, db);
-    }
+    }  catch (SQLException e) {
+
+    LOGGER.log(
+            Level.SEVERE,
+            "Database error while preparing checkout",
+            e
+    );
+
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Checkout Error");
+    alert.setHeaderText(
+            "Checkout could not be prepared."
+    );
+    alert.setContentText(
+            "You will be returned to your shopping cart."
+    );
+
+    alert.showAndWait();
+
+    return buildCartScene(stage, db);
+  }
   }
 
 

@@ -24,7 +24,8 @@
 
     <Label fx:id="statusLabel"/>
 
-    <Button text="Place Order"
+    <Button fx:id="placeOrderButton"
+            text="Place Order"
             onAction="#handlePlaceOrder"/>
 
     <Button text="Back to Cart"
