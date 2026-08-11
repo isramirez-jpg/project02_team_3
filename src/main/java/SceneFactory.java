@@ -44,6 +44,7 @@ public class SceneFactory {
       case DASHBOARD -> buildDashboardScene(stage, db);
       case CART -> buildCartScene(stage, db);
       case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
+      case BROWSE_PRODUCT -> buildBrowseProduct(stage,db);
     };
   }
 
@@ -58,8 +59,9 @@ public class SceneFactory {
    */
   private static Scene buildMainScene(Stage stage, DatabaseManager db) {
     // Fetch first and last name from database
-    // 08/08/2026 – MQ – DAO Refactor – Fetch customer name using CustomerDAO
-    String fullName = (currentUser != null) ? db.getCustomerDAO().getCustomerNameByUsername(currentUser) : "Guest";
+    String fullName = (currentUser != null)
+            ? db.getCustomerDAO().getCustomerNameByUsername(currentUser)
+            : "Guest";
     Label loggedInLabel = new Label("User Currently Logged in:\n" + fullName);
     loggedInLabel.setStyle("-fx-font-weight: bold;");
 
@@ -81,20 +83,30 @@ public class SceneFactory {
     Label title = new Label("Welcome to Cache Me Outside Clothing Co.");
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-    Button cartButton = new Button("Shopping Cart");
-    cartButton.setOnAction(e ->
-        stage.setScene(create(SceneType.CART, stage, db))
+    Button goButton = new Button("Open Management Todo List");
+    goButton.setOnAction(e ->
+        stage.setScene(create(SceneType.DASHBOARD, stage, db))
     );
 
-    VBox centerLayout = new VBox(16, title, cartButton);
+    Button cartButton = new Button("Shopping Cart");
+    cartButton.setOnAction(e ->
+            stage.setScene(create(SceneType.CART, stage, db))
+    );
+
+    Button browseProductButton = new Button("Browse Product");
+    browseProductButton.setOnAction(e ->
+            stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
+    );
+
+    VBox centerLayout = new VBox(16, title, goButton, cartButton, browseProductButton);
     //VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
 
     // Only show the Admin To do List button if the
     // current logged-in user has ADMIN role
-    // 08/08/2026 – MQ – DAO Refactor – Fetch user role using UserDAO
-    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+    if (currentUser != null &&
+            "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
       Button managementTodoListButton = new Button("Admin Todo List");
       managementTodoListButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
       managementTodoListButton.setOnAction(e ->
@@ -105,8 +117,8 @@ public class SceneFactory {
 
     // Only show the Admin User Dashboard button if the
     // current logged-in user has ADMIN role
-    // 08/08/2026 – MQ – DAO Refactor – Fetch user role using UserDAO
-    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+    if (currentUser != null &&
+            "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
       Button adminButton = new Button("Admin User Dashboard");
       adminButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
       adminButton.setOnAction(e -> stage.setScene(create(SceneType.ADMIN_USER_DASHBOARD, stage, db)));
@@ -275,8 +287,10 @@ public class SceneFactory {
         }
 
         // save boolean success value
-        // 08/08/2026 – MQ – DAO Refactor – Delegate registration to UserDAO
-        boolean success = db.getUserDAO().registerUser(user, pass, email, firstName, lastName, phone, street, city, state, zip, role);
+        boolean success = db.getUserDAO().registerUser(
+                user, pass, email, firstName, lastName,
+                phone, street, city, state, zip, role
+        );
         if (success) {
           // Set currentUser session after registration
           currentUser = user;
@@ -287,7 +301,6 @@ public class SceneFactory {
         }
       } else {
         // if logging in, and username and password are good, authenticate the user
-        // 08/08/2026 – MQ – DAO Refactor – Delegate authentication to UserDAO
         if (db.getUserDAO().authenticateUser(user, pass)) {
           // Set the currentUser session after login
           currentUser = user;
@@ -335,7 +348,6 @@ public class SceneFactory {
     title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
     ListView<String> listView = new ListView<>();
-    // 08/08/2026 – MQ – DAO Refactor – Delegate item loading to ItemDAO
     listView.getItems().addAll(db.getItemDAO().getAllItems());
 
     TextField inputField = new TextField();
@@ -346,7 +358,6 @@ public class SceneFactory {
     addButton.setOnAction(e -> {
       String text = inputField.getText().trim();
       if (!text.isEmpty()) {
-        // 08/08/2026 – MQ – DAO Refactor – Delegate item creation to ItemDAO
         db.getItemDAO().insertItem(text);
         listView.getItems().setAll(db.getItemDAO().getAllItems());
         inputField.clear();
@@ -358,7 +369,6 @@ public class SceneFactory {
     deleteButton.setOnAction(e -> {
       String selectedItem = listView.getSelectionModel().getSelectedItem();
       if (selectedItem != null) {
-        // 08/08/2026 – MQ – DAO Refactor – Delegate item deletion to ItemDAO
         db.getItemDAO().deleteItem(selectedItem);
         listView.getItems().setAll(db.getItemDAO().getAllItems());
       }
@@ -375,7 +385,7 @@ public class SceneFactory {
 
     Button addCategoryButton = new Button("Add Category");
     addCategoryButton.setOnAction(e ->
-        stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
+            stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
     );
 
     HBox navRow = new HBox(8, backButton, addCategoryButton);
@@ -422,6 +432,23 @@ public class SceneFactory {
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException("Could not load Add Category scene.", e);
+    }
+  }
+
+  /**
+   * Builds the BROWSE_PRODUCT scene using browse-product.fxml.
+   */
+  private static Scene buildBrowseProduct(Stage stage, DatabaseManager db) {
+    try {
+      FXMLLoader loader = new FXMLLoader(SceneFactory.class.getResource("/browse-product.fxml"));
+      Parent root = loader.load();
+
+      BrowseProductController controller = loader.getController();
+      controller.setApplicationData(stage, db);
+
+      return new Scene(root, 600, 450);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to load browse-product.fxml.", e);
     }
   }
 
