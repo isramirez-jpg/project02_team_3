@@ -73,5 +73,15 @@ public class CartController {
         );
     }
     @FXML
+    private void goToCheckout() {
+        stage.setScene(
+                SceneFactory.create(
+                        SceneType.CHECKOUT,
+                        stage,
+                        db
+                )
+        );
+    }
+    @FXML
     private ListView<String> cartListView;
 }

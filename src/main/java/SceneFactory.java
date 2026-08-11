@@ -45,6 +45,7 @@ public class SceneFactory {
       case CART -> buildCartScene(stage, db);
       case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
       case BROWSE_PRODUCT -> buildBrowseProduct(stage,db);
+      case CHECKOUT -> buildCheckoutScene(stage, db);
     };
   }
 
@@ -413,6 +414,45 @@ public class SceneFactory {
     } catch (IOException e) {
       throw new IllegalStateException("Unable to load Cart.fxml.", e);
     }
+  }
+  /**
+   * Builds the CHECKOUT scene.
+   *
+   * @param stage the Stage object for the application window
+   * @param db the DatabaseManager instance
+   * @return a new checkout Scene
+   */
+  private static Scene buildCheckoutScene(
+          Stage stage,
+          DatabaseManager db
+  ) {
+    Label title = new Label("Checkout");
+    title.setStyle(
+            "-fx-font-size: 20px; -fx-font-weight: bold;"
+    );
+
+    Button backButton = new Button("Back to Cart");
+
+    backButton.setOnAction(e ->
+            stage.setScene(
+                    create(
+                            SceneType.CART,
+                            stage,
+                            db
+                    )
+            )
+    );
+
+    VBox layout = new VBox(
+            16,
+            title,
+            backButton
+    );
+
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(24));
+
+    return new Scene(layout, 600, 450);
   }
 
   /**
