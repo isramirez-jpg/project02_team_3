@@ -49,6 +49,7 @@ public class SceneFactory {
       case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
       case BROWSE_PRODUCT -> buildBrowseProduct(stage,db);
       case  CATALOG_MANAGEMENT -> buildCatalogManagementScene(stage, db);
+      case ADD_PRODUCT -> buildAddProductScene(stage, db);
     };
   }
 
@@ -483,6 +484,37 @@ public class SceneFactory {
     } catch (IOException e) {
       throw new IllegalStateException(
               "Unable to load catalog-management.fxml.",
+              e
+      );
+    }
+  }
+
+  /**
+   * Builds the Add Product scene using add-product.fxml.
+   */
+  private static Scene buildAddProductScene(
+          Stage stage,
+          DatabaseManager db) {
+
+    try {
+      FXMLLoader loader = new FXMLLoader(
+              SceneFactory.class.getResource(
+                      "/add-product.fxml"
+              )
+      );
+
+      Parent root = loader.load();
+
+      AddProductController controller =
+              loader.getController();
+
+      controller.setApplicationData(stage, db);
+
+      return new Scene(root, 600, 600);
+
+    } catch (IOException e) {
+      throw new IllegalStateException(
+              "Unable to load add-product.fxml.",
               e
       );
     }

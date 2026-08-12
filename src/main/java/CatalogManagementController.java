@@ -335,9 +335,12 @@ public class CatalogManagementController {
     @FXML
     private void handleAddProduct() {
 
-        showInformation(
-                "Add Product",
-                "Add Product functionality will be added next."
+        stage.setScene(
+                SceneFactory.create(
+                        SceneType.ADD_PRODUCT,
+                        stage,
+                        databaseManager
+                )
         );
     }
 
