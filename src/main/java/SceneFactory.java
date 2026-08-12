@@ -392,12 +392,7 @@ public class SceneFactory {
         stage.setScene(create(SceneType.MAIN, stage, db))
     );
 
-    Button addCategoryButton = new Button("Add Category");
-    addCategoryButton.setOnAction(e ->
-            stage.setScene(create(SceneType.ADD_CATEGORY, stage, db))
-    );
-
-    HBox navRow = new HBox(8, backButton, addCategoryButton);
+    HBox navRow = new HBox(8, backButton);
     navRow.setAlignment(Pos.CENTER_LEFT);
 
     VBox layout = new VBox(12, title, listView, inputRow, navRow);
