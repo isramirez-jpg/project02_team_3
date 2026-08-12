@@ -45,6 +45,7 @@ public class SceneFactory {
       case CART -> buildCartScene(stage, db);
       case ADD_CATEGORY -> buildAddCategoryScene(stage, db);
       case BROWSE_PRODUCT -> buildBrowseProduct(stage,db);
+      case  CATALOG_MANAGEMENT -> buildCatalogManagementScene(stage, db);
     };
   }
 
@@ -98,7 +99,12 @@ public class SceneFactory {
             stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
 
-    VBox centerLayout = new VBox(16, title, goButton, cartButton, browseProductButton);
+    Button catalogManagementButton = new Button("Catalog Management");
+    catalogManagementButton.setOnAction(e ->
+            stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
+    );
+
+    VBox centerLayout = new VBox(16, title, goButton, cartButton, browseProductButton, catalogManagementButton);
     //VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
@@ -452,5 +458,42 @@ public class SceneFactory {
     }
   }
 
+  /**
+   * Builds the Catalog Management scene using CatalogManagement.fxml.
+   *
+   */
+  private static Scene buildCatalogManagementScene(
+          Stage stage,
+          DatabaseManager db) {
+
+    try {
+      FXMLLoader loader = new FXMLLoader(
+              SceneFactory.class.getResource(
+                      "/CatalogManagement.fxml"
+              )
+      );
+
+      Parent root = loader.load();
+
+      CatalogManagementController controller =
+              loader.getController();
+
+      controller.setApplicationData(stage, db);
+
+      return new Scene(root, 600, 450);
+
+    } catch (IOException e) {
+      LOGGER.log(
+              Level.SEVERE,
+              "Unable to load CatalogManagement.fxml",
+              e
+      );
+
+      throw new IllegalStateException(
+              "Unable to load CatalogManagement.fxml.",
+              e
+      );
+    }
+  }
   //endregion
 }
