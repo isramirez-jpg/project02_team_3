@@ -98,9 +98,7 @@ public class CheckoutController {
                     "Checkout validation failed for cart " + cartId,
                     e
             );
-            statusLabel.setText(
-                    "Checkout could not be completed."
-            );
+            statusLabel.setText(e.getMessage());
             statusLabel.setStyle("-fx-text-fill: red;");
 
             placeOrderButton.setDisable(false);

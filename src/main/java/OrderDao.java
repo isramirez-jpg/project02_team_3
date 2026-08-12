@@ -300,8 +300,8 @@ public class OrderDao {
 
             // Prevent checkout of an empty cart
             if (cartItems.isEmpty()) {
-                throw new SQLException(
-                        "Cannot checkout an empty cart."
+                throw new IllegalStateException(
+                        "Your cart is empty."
                 );
             }
 
