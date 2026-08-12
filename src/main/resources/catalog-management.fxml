@@ -51,7 +51,7 @@
                                              text="Product Name"
                                              prefWidth="150"/>
 
-                                <TableColumn fx:id="categoryIdColumn"
+                                <TableColumn fx:id="productCategoryIdColumn"
                                              text="Category"
                                              prefWidth="75"/>
 

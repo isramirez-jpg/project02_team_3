@@ -14,6 +14,9 @@ import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Builds and returns Scene objects on demand.
  * The Client calls create() with a SceneType.
@@ -469,7 +472,7 @@ public class SceneFactory {
     try {
       FXMLLoader loader = new FXMLLoader(
               SceneFactory.class.getResource(
-                      "/CatalogManagement.fxml"
+                      "/catalog-management.fxml"
               )
       );
 
@@ -483,14 +486,8 @@ public class SceneFactory {
       return new Scene(root, 600, 450);
 
     } catch (IOException e) {
-      LOGGER.log(
-              Level.SEVERE,
-              "Unable to load CatalogManagement.fxml",
-              e
-      );
-
       throw new IllegalStateException(
-              "Unable to load CatalogManagement.fxml.",
+              "Unable to load catalog-management.fxml.",
               e
       );
     }

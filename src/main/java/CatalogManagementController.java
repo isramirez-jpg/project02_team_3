@@ -34,7 +34,7 @@ public class CatalogManagementController {
     private TableColumn<Product, String> productNameColumn;
 
     @FXML
-    private TableColumn<Product, Number> categoryIdColumn;
+    private TableColumn<Product, Number> productCategoryIdColumn;
 
     @FXML
     private TableColumn<Product, Number> priceColumn;
@@ -95,7 +95,7 @@ public class CatalogManagementController {
                 )
         );
 
-        categoryIdColumn.setCellValueFactory(
+        productCategoryIdColumn.setCellValueFactory(
                 data -> new SimpleIntegerProperty(
                         data.getValue().getCategoryId()
                 )
@@ -148,7 +148,7 @@ public class CatalogManagementController {
         categoryDescriptionColumn.setCellValueFactory(
                 data -> new SimpleStringProperty(
                         data.getValue().getDescription()
-                );
+                )
         );
     }
 
@@ -360,10 +360,12 @@ public class CatalogManagementController {
      */
     @FXML
     private void handleAddCategory() {
-
-        showInformation(
-                "Add Category",
-                "Add Category functionality will be added next."
+        stage.setScene(
+                SceneFactory.create(
+                        SceneType.ADD_CATEGORY,
+                        stage,
+                        databaseManager
+                )
         );
     }
 
