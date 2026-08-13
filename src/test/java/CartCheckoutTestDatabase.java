@@ -5,6 +5,7 @@ import java.sql.Statement;
 /**
  * @author Isabel Ramirez
  * @created 8.13.26
+ * Description: An LLM was used to assist with drafting test cases
  */
 
 public class CartCheckoutTestDatabase {

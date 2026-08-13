@@ -15,6 +15,7 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 /**
  * @author Isabel Ramirez
  * @created 8.13.26
+ * Description: An LLM was used to assist with drafting test cases
  */
 public class CartCheckoutNavigationTest
         extends ApplicationTest {
