@@ -32,7 +32,7 @@ import java.sql.SQLException;
  */
 public class SceneFactory {
   private static final Logger LOGGER =
-          Logger.getLogger(SceneFactory.class.getName());
+      Logger.getLogger(SceneFactory.class.getName());
 
   //  Used to track active logged in user
   private static String currentUser = null;
@@ -66,10 +66,11 @@ public class SceneFactory {
    * @return a new Scene containing the main UI
    */
   private static Scene buildMainScene(Stage stage, DatabaseManager db) {
+
     // Fetch first and last name from database
     String fullName = (currentUser != null)
-            ? db.getCustomerDAO().getCustomerNameByUsername(currentUser)
-            : "Guest";
+        ? db.getCustomerDAO().getCustomerNameByUsername(currentUser)
+        : "Guest";
     Label loggedInLabel = new Label("User Currently Logged in:\n" + fullName);
     loggedInLabel.setStyle("-fx-font-weight: bold;");
 
@@ -93,31 +94,34 @@ public class SceneFactory {
 
     Button cartButton = new Button("Shopping Cart");
     cartButton.setOnAction(e ->
-            stage.setScene(create(SceneType.CART, stage, db))
+        stage.setScene(create(SceneType.CART, stage, db))
     );
 
     Button browseProductButton = new Button("Browse Product");
     browseProductButton.setOnAction(e ->
-            stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
+        stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
 
-    VBox centerLayout = new VBox(16, title, cartButton, browseProductButton);
     Button catalogManagementButton = new Button("Catalog Management");
     catalogManagementButton.setOnAction(e ->
-            stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
+        stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
     );
 
     VBox centerLayout = new VBox(16, title, cartButton, browseProductButton, catalogManagementButton);
-    //VBox centerLayout = new VBox(16, title, goButton, cartButton);
-    //VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
 
     // Only show the Admin To do List button if the
     // current logged-in user has ADMIN role
-    if (currentUser != null &&
-            "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+    if (currentUser != null && "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+
+      // create a button called managementTodoListButton
       Button managementTodoListButton = new Button("Admin Todo List");
-      managementTodoListButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
+
+      // 08/13/2026 - MQ - comment out old inline style
+      //managementTodoListButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
+      // 08/13/2026 - MQ - Apply admin-button css class from master stylesheet
+      // to the Admin To Do List button
+      managementTodoListButton.getStyleClass().add("admin-button");
       managementTodoListButton.setOnAction(e ->
           stage.setScene(create(SceneType.ADMIN_TODO_LIST, stage, db))
       );
@@ -127,9 +131,13 @@ public class SceneFactory {
     // Only show the Admin User Dashboard button if the
     // current logged-in user has ADMIN role
     if (currentUser != null &&
-            "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+        "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
       Button adminButton = new Button("Admin User Dashboard");
-      adminButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
+      // 08/13/2026 - MQ - comment out old inline style
+      //adminButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
+      // 08/13/2026 - MQ - Apply admin-button css class from master stylesheet
+      // to the Admin User Dashboard button
+      adminButton.getStyleClass().add("admin-button");
       adminButton.setOnAction(e -> stage.setScene(create(SceneType.ADMIN_USER_DASHBOARD, stage, db)));
       centerLayout.getChildren().add(adminButton);
     }
@@ -138,8 +146,16 @@ public class SceneFactory {
     root.setTop(topHeader);
     root.setCenter(centerLayout);
 
-    // Revise main scene height to 450
-    return new Scene(root, 600, 450);
+    // set scene width and height
+    Scene scene = new Scene(root, 600, 450);
+
+    // 08/13/2026 - MQ - add master stylesheet to MAIN scene
+    scene.getStylesheets().add(
+        SceneFactory.class.getResource("/styles.css").toExternalForm()
+    );
+
+    // Revise scene
+    return scene;
   }
 
   /**
@@ -297,8 +313,8 @@ public class SceneFactory {
 
         // save boolean success value
         boolean success = db.getUserDAO().registerUser(
-                user, pass, email, firstName, lastName,
-                phone, street, city, state, zip, role
+            user, pass, email, firstName, lastName,
+            phone, street, city, state, zip, role
         );
         if (success) {
           // Set currentUser session after registration
@@ -422,8 +438,8 @@ public class SceneFactory {
    * Builds the CHECKOUT scene using Checkout.fxml.
    */
   private static Scene buildCheckoutScene(
-          Stage stage,
-          DatabaseManager db
+      Stage stage,
+      DatabaseManager db
   ) {
     try {
       if (currentUser == null) {
@@ -431,7 +447,7 @@ public class SceneFactory {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Login Required");
         alert.setHeaderText(
-                "You must be logged in to check out."
+            "You must be logged in to check out."
         );
 
         alert.showAndWait();
@@ -440,30 +456,30 @@ public class SceneFactory {
       }
 
       int userId =
-              db.getUserIdByUsername(currentUser);
+          db.getUserIdByUsername(currentUser);
 
       CartDao cartDao =
-              new CartDao(db);
+          new CartDao(db);
 
       Cart activeCart =
-              cartDao.getOrCreateActiveCart(userId);
+          cartDao.getOrCreateActiveCart(userId);
 
       FXMLLoader loader =
-              new FXMLLoader(
-                      SceneFactory.class.getResource(
-                              "/Checkout.fxml"
-                      )
-              );
+          new FXMLLoader(
+              SceneFactory.class.getResource(
+                  "/Checkout.fxml"
+              )
+          );
 
       Parent root = loader.load();
 
       CheckoutController controller =
-              loader.getController();
+          loader.getController();
 
       controller.setApplicationData(
-              stage,
-              db,
-              activeCart.getCartId()
+          stage,
+          db,
+          activeCart.getCartId()
       );
 
       return new Scene(root, 600, 450);
@@ -471,18 +487,18 @@ public class SceneFactory {
     } catch (IOException e) {
 
       LOGGER.log(
-              Level.SEVERE,
-              "Unable to load Checkout.fxml",
-              e
+          Level.SEVERE,
+          "Unable to load Checkout.fxml",
+          e
       );
 
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Checkout Error");
       alert.setHeaderText(
-              "Checkout could not be opened."
+          "Checkout could not be opened."
       );
       alert.setContentText(
-              "You will be returned to your shopping cart."
+          "You will be returned to your shopping cart."
       );
 
       alert.showAndWait();
@@ -490,25 +506,25 @@ public class SceneFactory {
       return buildCartScene(stage, db);
     }  catch (SQLException e) {
 
-    LOGGER.log(
-            Level.SEVERE,
-            "Database error while preparing checkout",
-            e
-    );
+      LOGGER.log(
+          Level.SEVERE,
+          "Database error while preparing checkout",
+          e
+      );
 
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("Checkout Error");
-    alert.setHeaderText(
-            "Checkout could not be prepared."
-    );
-    alert.setContentText(
-            "You will be returned to your shopping cart."
-    );
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Checkout Error");
+      alert.setHeaderText(
+          "Checkout could not be prepared."
+      );
+      alert.setContentText(
+          "You will be returned to your shopping cart."
+      );
 
-    alert.showAndWait();
+      alert.showAndWait();
 
-    return buildCartScene(stage, db);
-  }
+      return buildCartScene(stage, db);
+    }
   }
 
 
@@ -554,20 +570,20 @@ public class SceneFactory {
    *
    */
   private static Scene buildCatalogManagementScene(
-          Stage stage,
-          DatabaseManager db) {
+      Stage stage,
+      DatabaseManager db) {
 
     try {
       FXMLLoader loader = new FXMLLoader(
-              SceneFactory.class.getResource(
-                      "/catalog-management.fxml"
-              )
+          SceneFactory.class.getResource(
+              "/catalog-management.fxml"
+          )
       );
 
       Parent root = loader.load();
 
       CatalogManagementController controller =
-              loader.getController();
+          loader.getController();
 
       controller.setApplicationData(stage, db);
 
@@ -575,8 +591,8 @@ public class SceneFactory {
 
     } catch (IOException e) {
       throw new IllegalStateException(
-              "Unable to load catalog-management.fxml.",
-              e
+          "Unable to load catalog-management.fxml.",
+          e
       );
     }
   }
@@ -585,20 +601,20 @@ public class SceneFactory {
    * Builds the Add Product scene using add-product.fxml.
    */
   private static Scene buildAddProductScene(
-          Stage stage,
-          DatabaseManager db) {
+      Stage stage,
+      DatabaseManager db) {
 
     try {
       FXMLLoader loader = new FXMLLoader(
-              SceneFactory.class.getResource(
-                      "/add-product.fxml"
-              )
+          SceneFactory.class.getResource(
+              "/add-product.fxml"
+          )
       );
 
       Parent root = loader.load();
 
       AddProductController controller =
-              loader.getController();
+          loader.getController();
 
       controller.setApplicationData(stage, db);
 
@@ -606,8 +622,8 @@ public class SceneFactory {
 
     } catch (IOException e) {
       throw new IllegalStateException(
-              "Unable to load add-product.fxml.",
-              e
+          "Unable to load add-product.fxml.",
+          e
       );
     }
   }
