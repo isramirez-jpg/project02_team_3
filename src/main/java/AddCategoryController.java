@@ -83,10 +83,10 @@ public class AddCategoryController {
      * Back to Dashboard.
      */
     @FXML
-    private void handleBackToDashboard() {
+    private void handleBack() {
         stage.setScene(
                 SceneFactory.create(
-                        SceneType.DASHBOARD,
+                        SceneType.CATALOG_MANAGEMENT,
                         stage,
                         db
                 )

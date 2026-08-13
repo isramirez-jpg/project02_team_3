@@ -38,8 +38,8 @@
     <Button text="Clear"
             onAction="#handleClear"/>
 
-    <Button text="Back to Dashboard"
-            onAction="#handleBackToDashboard"/>
+    <Button text="Back"
+            onAction="#handleBack"/>
 
     <Label fx:id="messageLabel"/>
 
