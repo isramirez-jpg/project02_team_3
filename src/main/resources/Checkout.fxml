@@ -17,7 +17,8 @@
                 left="24"/>
     </padding>
 
-    <Label text="Checkout"
+    <Label fx:id="checkoutTitle"
+           text="Checkout"
            style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
     <Label text="Review your cart before placing your order."/>

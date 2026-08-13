@@ -23,7 +23,8 @@
     <Button text="Back"
             onAction="#goBack"/>
 
-    <Button text="Checkout"
+    <Button fx:id="checkoutButton"
+            text="Checkout"
             onAction="#goToCheckout"/>
 
 </VBox>
