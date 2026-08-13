@@ -102,13 +102,19 @@ public class SceneFactory {
         stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
 
-    Button catalogManagementButton = new Button("Catalog Management");
-    catalogManagementButton.setOnAction(e ->
-        stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
-    );
-
-    VBox centerLayout = new VBox(16, title, cartButton, browseProductButton, catalogManagementButton);
+    VBox centerLayout = new VBox(16, title, cartButton, browseProductButton);
     centerLayout.setAlignment(Pos.CENTER);
+
+    //Only show Catalog Management button if the
+    //current logged-in user has ADMIN role
+    if (currentUser != null &&
+            "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+      Button catalogManagementButton = new Button("Catalog Management");
+      catalogManagementButton.setOnAction(e ->
+              stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
+      );
+      centerLayout.getChildren().add(catalogManagementButton);
+    }
 
     // Only show the Admin To do List button if the
     // current logged-in user has ADMIN role
