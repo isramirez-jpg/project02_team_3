@@ -175,11 +175,11 @@ public class AddProductController {
 
 
         // Validate price
-        if (price < 0) {
+        if (price < 0 || !Double.isFinite(price)) {
 
             showError(
                     "Invalid Price",
-                    "Price cannot be negative."
+                    "Price must be a valid finite number and cannot be negative."
             );
             return;
         }
