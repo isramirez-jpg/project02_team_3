@@ -267,8 +267,11 @@ public class OrderDao {
      * @throws SQLException if checkout cannot be completed
      */
     public Order checkoutCart(int cartId) throws SQLException {
-
+        // DatabaseManager returns one shared SQLite connection.
+        // All DAO calls in this method use the same connection,
+        // so they participate in this transaction.
         Connection connection = db.getConnection();
+
         boolean originalAutoCommit = connection.getAutoCommit();
 
         CartDao cartDao = new CartDao(db);
@@ -297,8 +300,8 @@ public class OrderDao {
 
             // Prevent checkout of an empty cart
             if (cartItems.isEmpty()) {
-                throw new SQLException(
-                        "Cannot checkout an empty cart."
+                throw new IllegalStateException(
+                        "Your cart is empty."
                 );
             }
 
@@ -351,9 +354,14 @@ public class OrderDao {
 
             return order;
 
-        } catch (SQLException | RuntimeException e) {
+        }  catch (SQLException | RuntimeException e) {
 
-            connection.rollback();
+            try {
+             connection.rollback();
+            } catch (SQLException rollbackException) {
+             e.addSuppressed(rollbackException);
+            }
+
             throw e;
 
         } finally {

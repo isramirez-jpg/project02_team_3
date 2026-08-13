@@ -42,22 +42,22 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 3>: payment-API stub — out of scope.
 
 ## Code Review Log
-| PR   | Author         | Human reviewer(s) | AI review (link) | Outcome |
-|------|----------------|-------------------|------------------|---------|
-| #12  | Miguel Quezada | Isabel Ramirez    | | Approved|
-| #13  | Miguel Quezada | Ha Nguyen         | | Approved |
-| #14  | Ha Nguyen      | Miguel Quezada    | <link or commit> | Approved |
-| #15  | Isabel Ramirez | Miguel Quezada    | | Approved |
-| #18  | Isabel Ramirez | Ha Nguyen         | | Approved |
-| #19  | Miguel Quezada | Isabel Ramirez    | | Approved |
-| #20  | Ha Nguyen      | Isabel Ramirez    | | Approved |
-| #21  | Isabel Ramirez | Miguel Quezada    | | |
-
+| PR   | Author         | Human reviewer(s)               | AI review (link) | Outcome   |
+|------|----------------|---------------------------------|------------------|-----------|
+| #12  | Miguel Quezada | Isabel Ramirez                  | | Approved  |
+| #13  | Miguel Quezada | Ha Nguyen                       | | Approved  |
+| #14  | Ha Nguyen      | Miguel Quezada                  | <link or commit> | Approved  |
+| #15  | Isabel Ramirez | Miguel Quezada                  | | Approved  |
+| #18  | Isabel Ramirez | Ha Nguyen                       | | Approved  |
+| #19  | Miguel Quezada | Isabel Ramirez                  | | Approved  |
+| #20  | Ha Nguyen      | Isabel Ramirez & Miguel Quezada | | Approved  |
+| #21  | Isabel Ramirez | Miguel Quezada  & Ha Nguyen     |https://claude.ai/share/40911211-0ae5-4287-8c93-4bad04e4e800 | Approved  |
 
 
 ## AI Usage Log
-- **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
-- **AI code reviews:** <PR link + adjudication note> — per owner.
+
+- AI-drafted tests: <link to TESTING.md / commit> — per owner.
+- AI code review: [PR #21](https://github.com/isramirez-jpg/project02_team_3/pull/21) — feedback reviewed and applicable checkout error-handling and transaction-safety recommendations implemented by Isabel Ramirez.
 
 ## Extra Credit Log
 | Item | Who | Evidence (Issue/PR) |

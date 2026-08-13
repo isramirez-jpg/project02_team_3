@@ -13,6 +13,9 @@ import javafx.scene.Parent;
 // Import the Image and ImageView classes to load and display images
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.sql.SQLException;
 
 /**
  * Builds and returns Scene objects on demand.
@@ -28,6 +31,8 @@ import javafx.scene.image.ImageView;
  *  @since 2026-08-02
  */
 public class SceneFactory {
+  private static final Logger LOGGER =
+          Logger.getLogger(SceneFactory.class.getName());
 
   //  Used to track active logged in user
   private static String currentUser = null;
@@ -416,44 +421,98 @@ public class SceneFactory {
     }
   }
   /**
-   * Builds the CHECKOUT scene.
-   *
-   * @param stage the Stage object for the application window
-   * @param db the DatabaseManager instance
-   * @return a new checkout Scene
+   * Builds the CHECKOUT scene using Checkout.fxml.
    */
   private static Scene buildCheckoutScene(
           Stage stage,
           DatabaseManager db
   ) {
-    Label title = new Label("Checkout");
-    title.setStyle(
-            "-fx-font-size: 20px; -fx-font-weight: bold;"
+    try {
+      if (currentUser == null) {
+
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Login Required");
+        alert.setHeaderText(
+                "You must be logged in to check out."
+        );
+
+        alert.showAndWait();
+
+        return buildLoginScene(stage, db);
+      }
+
+      int userId =
+              db.getUserIdByUsername(currentUser);
+
+      CartDao cartDao =
+              new CartDao(db);
+
+      Cart activeCart =
+              cartDao.getOrCreateActiveCart(userId);
+
+      FXMLLoader loader =
+              new FXMLLoader(
+                      SceneFactory.class.getResource(
+                              "/Checkout.fxml"
+                      )
+              );
+
+      Parent root = loader.load();
+
+      CheckoutController controller =
+              loader.getController();
+
+      controller.setApplicationData(
+              stage,
+              db,
+              activeCart.getCartId()
+      );
+
+      return new Scene(root, 600, 450);
+
+    } catch (IOException e) {
+
+      LOGGER.log(
+              Level.SEVERE,
+              "Unable to load Checkout.fxml",
+              e
+      );
+
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Checkout Error");
+      alert.setHeaderText(
+              "Checkout could not be opened."
+      );
+      alert.setContentText(
+              "You will be returned to your shopping cart."
+      );
+
+      alert.showAndWait();
+
+      return buildCartScene(stage, db);
+    }  catch (SQLException e) {
+
+    LOGGER.log(
+            Level.SEVERE,
+            "Database error while preparing checkout",
+            e
     );
 
-    Button backButton = new Button("Back to Cart");
-
-    backButton.setOnAction(e ->
-            stage.setScene(
-                    create(
-                            SceneType.CART,
-                            stage,
-                            db
-                    )
-            )
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Checkout Error");
+    alert.setHeaderText(
+            "Checkout could not be prepared."
+    );
+    alert.setContentText(
+            "You will be returned to your shopping cart."
     );
 
-    VBox layout = new VBox(
-            16,
-            title,
-            backButton
-    );
+    alert.showAndWait();
 
-    layout.setAlignment(Pos.CENTER);
-    layout.setPadding(new Insets(24));
-
-    return new Scene(layout, 600, 450);
+    return buildCartScene(stage, db);
   }
+  }
+
 
   /**
    * Builds the ADD_CATEGORY scene using add-category.fxml.
