@@ -38,7 +38,9 @@ public class UserDAO {
     String insertCustomerSql = "INSERT INTO customers (user_id, first_name, last_name, phone) VALUES (?, ?, ?, ?);";
     String insertAddressSql = "INSERT INTO addresses (customer_id, street, city, state, zip_code) VALUES (?, ?, ?, ?, ?);";
 
+    boolean originalAutoCommit = true;
     try {
+      originalAutoCommit = connection.getAutoCommit();
       connection.setAutoCommit(false);
 
       long userId = -1;
@@ -102,7 +104,7 @@ public class UserDAO {
       return false;
     } finally {
       try {
-        connection.setAutoCommit(true);
+        connection.setAutoCommit(originalAutoCommit);
       } catch (SQLException e) {
         e.printStackTrace();
       }
@@ -165,8 +167,8 @@ public class UserDAO {
             JOIN roles r ON u.role_id = r.role_id
             ORDER BY u.user_id ASC
         """;
-    try (Statement ddlStatement = connection.createStatement();
-        ResultSet resultSet = ddlStatement.executeQuery(sqlQuery)) {
+    try (Statement selectStatement = connection.createStatement();
+        ResultSet resultSet = selectStatement.executeQuery(sqlQuery)) {
       while (resultSet.next()) {
         usersList.add(new UserInfo(
             resultSet.getInt("user_id"),

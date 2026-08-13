@@ -89,11 +89,6 @@ public class SceneFactory {
     Label title = new Label("Welcome to Cache Me Outside Clothing Co.");
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-    Button goButton = new Button("Open Management Todo List");
-    goButton.setOnAction(e ->
-        stage.setScene(create(SceneType.DASHBOARD, stage, db))
-    );
-
     Button cartButton = new Button("Shopping Cart");
     cartButton.setOnAction(e ->
             stage.setScene(create(SceneType.CART, stage, db))
@@ -104,7 +99,7 @@ public class SceneFactory {
             stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
 
-    VBox centerLayout = new VBox(16, title, goButton, cartButton, browseProductButton);
+    VBox centerLayout = new VBox(16, title, cartButton, browseProductButton);
     //VBox centerLayout = new VBox(16, title, goButton, cartButton);
     //VBox centerLayout = new VBox(16, title);
     centerLayout.setAlignment(Pos.CENTER);
