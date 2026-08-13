@@ -307,6 +307,14 @@ public class CatalogManagementController {
         if (result.isPresent()
                 && result.get() == ButtonType.OK) {
 
+            if (categoryDAO.hasProducts(selectedCategory.getCategoryId())) {
+                showWarning(
+                        "Category In Use",
+                        "This category cannot be deleted because products are assigned to it."
+                );
+                return;
+            }
+
             boolean deleted =
                     categoryDAO.delete(
                             selectedCategory.getCategoryId()

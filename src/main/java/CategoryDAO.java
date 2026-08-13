@@ -153,6 +153,35 @@ public class CategoryDAO {
     }
 
     /**
+     * Checks whether any products are currently assigned to a category.
+     *
+     */
+
+    public boolean hasProducts(int categoryId) {
+        String sql = """
+            SELECT 1
+            FROM products
+            WHERE category_id = ?
+            LIMIT 1
+            """;
+
+        try (PreparedStatement statement = databaseManager.getConnection()
+                .prepareStatement(sql)) {
+
+            statement.setInt(1, categoryId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
      * Deletes a category from the categories table by its ID.
      */
     public boolean delete(int categoryId) {
