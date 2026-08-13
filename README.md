@@ -52,7 +52,7 @@ Issue if the team later decides to attempt it for extra credit._
 | #19  | Miguel Quezada | Isabel Ramirez                  | | Approved  |
 | #20  | Ha Nguyen      | Isabel Ramirez & Miguel Quezada | | Approved  |
 | #21  | Isabel Ramirez | Miguel Quezada  & Ha Nguyen     |https://claude.ai/share/40911211-0ae5-4287-8c93-4bad04e4e800 | Approved  |
-| #22  | Ha Nguyuen| Miguel Quezada  & Isabel Ramirez     |PR #22 | Pending  |
+| #22  | Ha Nguyuen| Miguel Quezada  & Isabel Ramirez     |https://github.com/isramirez-jpg/project02_team_3/pull/22 | Pending  |
 
 ## AI Usage Log
 
