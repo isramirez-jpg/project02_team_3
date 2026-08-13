@@ -2,73 +2,138 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Isabel Ramirez
  * @created 8.13.26
  */
-public class CartDaoTest {
+public class OrderDaoTest {
 
     private Connection connection;
     private DatabaseManager db;
     private CartDao cartDao;
+    private OrderDao orderDao;
 
     @BeforeEach
     void setUp() throws SQLException {
+
         connection =
                 CartCheckoutTestDatabase.createConnection();
 
         db = new DatabaseManager(connection, false);
+
         cartDao = new CartDao(db);
+        orderDao = new OrderDao(db);
     }
 
     @AfterEach
     void tearDown() throws SQLException {
+
         if (connection != null) {
             connection.close();
         }
     }
 
     @Test
-    void createCartCreatesActiveCart() throws SQLException {
-
-        int userId = insertTestUser();
-
-        Cart cart = cartDao.create(userId);
-
-        assertTrue(cart.getCartId() > 0);
-        assertEquals(userId, cart.getUserId());
-        assertEquals("ACTIVE", cart.getStatus());
-    }
-    @Test
-    void addProductAddsItemToCart() throws SQLException {
+    void checkoutCartCreatesCompletedOrder()
+            throws SQLException {
 
         int userId = insertTestUser();
         int productId = insertTestProduct();
 
         Cart cart = cartDao.create(userId);
 
-        CartItem item = cartDao.addProduct(
+        cartDao.addProduct(
                 cart.getCartId(),
                 productId,
                 2
         );
 
-        assertTrue(item.getCartItemId() > 0);
-        assertEquals(cart.getCartId(), item.getCartId());
-        assertEquals(productId, item.getProductId());
-        assertEquals("Test Shirt", item.getProductName());
-        assertEquals(2, item.getQuantity());
+        Order order =
+                orderDao.checkoutCart(
+                        cart.getCartId()
+                );
+
+        assertTrue(order.getOrderId() > 0);
+        assertEquals(userId, order.getUserId());
+        assertEquals(
+                new BigDecimal("39.98"),
+                order.getTotalAmount()
+        );
+        assertEquals(
+                "COMPLETED",
+                order.getStatus()
+        );
+
+        Cart completedCart =
+                cartDao.findById(
+                        cart.getCartId()
+                ).orElseThrow();
+
+        assertFalse(completedCart.isActive());
+        assertEquals(
+                "COMPLETED",
+                completedCart.getStatus()
+        );
+    }
+    @Test
+    void checkoutCopiesCartItemsIntoOrder()
+            throws SQLException {
+
+        int userId = insertTestUser();
+        int productId = insertTestProduct();
+
+        Cart cart = cartDao.create(userId);
+
+        cartDao.addProduct(
+                cart.getCartId(),
+                productId,
+                2
+        );
+
+        Order order =
+                orderDao.checkoutCart(cart.getCartId());
+
+        List<OrderItem> items =
+                orderDao.findItemsByOrderId(
+                        order.getOrderId()
+                );
+
+        assertEquals(1, items.size());
+        assertEquals(productId, items.get(0).getProductId());
+        assertEquals(2, items.get(0).getQuantity());
+        assertEquals(
+                new BigDecimal("19.99"),
+                items.get(0).getUnitPrice()
+        );
     }
 
     @Test
-    void addingSameProductTwiceIncreasesQuantity()
+    void checkoutEmptyCartThrowsException()
+            throws SQLException {
+
+        int userId = insertTestUser();
+
+        Cart cart = cartDao.create(userId);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> orderDao.checkoutCart(
+                        cart.getCartId()
+                )
+        );
+    }
+
+    @Test
+    void completedCartCannotBeCheckedOutAgain()
             throws SQLException {
 
         int userId = insertTestUser();
@@ -82,84 +147,14 @@ public class CartDaoTest {
                 1
         );
 
-        CartItem updatedItem =
-                cartDao.addProduct(
-                        cart.getCartId(),
-                        productId,
-                        2
-                );
+        orderDao.checkoutCart(cart.getCartId());
 
-        assertEquals(3, updatedItem.getQuantity());
-
-        List<CartItem> items =
-                cartDao.findItemsByCartId(
+        assertThrows(
+                SQLException.class,
+                () -> orderDao.checkoutCart(
                         cart.getCartId()
-                );
-
-        assertEquals(1, items.size());
-        assertEquals(3, items.get(0).getQuantity());
-    }
-
-    @Test
-    void updateQuantityChangesCartItemQuantity()
-            throws SQLException {
-
-        int userId = insertTestUser();
-        int productId = insertTestProduct();
-
-        Cart cart = cartDao.create(userId);
-
-        CartItem item = cartDao.addProduct(
-                cart.getCartId(),
-                productId,
-                1
+                )
         );
-
-        boolean updated =
-                cartDao.updateQuantity(
-                        item.getCartItemId(),
-                        4
-                );
-
-        assertTrue(updated);
-
-        List<CartItem> items =
-                cartDao.findItemsByCartId(
-                        cart.getCartId()
-                );
-
-        assertEquals(1, items.size());
-        assertEquals(4, items.get(0).getQuantity());
-    }
-
-    @Test
-    void removeItemDeletesCartItem()
-            throws SQLException {
-
-        int userId = insertTestUser();
-        int productId = insertTestProduct();
-
-        Cart cart = cartDao.create(userId);
-
-        CartItem item = cartDao.addProduct(
-                cart.getCartId(),
-                productId,
-                1
-        );
-
-        boolean removed =
-                cartDao.removeItem(
-                        item.getCartItemId()
-                );
-
-        assertTrue(removed);
-
-        List<CartItem> items =
-                cartDao.findItemsByCartId(
-                        cart.getCartId()
-                );
-
-        assertTrue(items.isEmpty());
     }
 
     private int insertTestUser() throws SQLException {
@@ -176,13 +171,15 @@ public class CartDaoTest {
                              java.sql.Statement.RETURN_GENERATED_KEYS
                      )) {
 
-            statement.setString(1, "cart_test_user");
+            statement.setString(1, "order_test_user");
             statement.setString(2, "test_hash");
-            statement.setString(3, "cart@test.com");
+            statement.setString(3, "order@test.com");
 
             statement.executeUpdate();
 
-            try (var keys = statement.getGeneratedKeys()) {
+            try (var keys =
+                         statement.getGeneratedKeys()) {
+
                 if (keys.next()) {
                     return keys.getInt(1);
                 }
@@ -193,13 +190,14 @@ public class CartDaoTest {
                 "Test user could not be created."
         );
     }
+
     private int insertTestProduct() throws SQLException {
 
         String sql = """
-            INSERT INTO products
-                (product_name, price, stock_quantity)
-            VALUES (?, ?, ?)
-            """;
+                INSERT INTO products
+                    (product_name, price, stock_quantity)
+                VALUES (?, ?, ?)
+                """;
 
         try (PreparedStatement statement =
                      connection.prepareStatement(
@@ -207,16 +205,18 @@ public class CartDaoTest {
                              java.sql.Statement.RETURN_GENERATED_KEYS
                      )) {
 
-            statement.setString(1, "Test Shirt");
+            statement.setString(1, "Checkout Shirt");
             statement.setBigDecimal(
                     2,
-                    new java.math.BigDecimal("19.99")
+                    new BigDecimal("19.99")
             );
             statement.setInt(3, 10);
 
             statement.executeUpdate();
 
-            try (var keys = statement.getGeneratedKeys()) {
+            try (var keys =
+                         statement.getGeneratedKeys()) {
+
                 if (keys.next()) {
                     return keys.getInt(1);
                 }

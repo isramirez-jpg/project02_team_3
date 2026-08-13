@@ -305,12 +305,11 @@ public class CartDao {
     ) throws SQLException {
 
         String sql = """
-                UPDATE carts
-                SET status = ?,
-                    updated_at =
-                        DATETIME('now', 'localtime')
-                WHERE cart_id = ?
-                """;
+        UPDATE carts
+        SET status = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE cart_id = ?
+        """;
 
         try (PreparedStatement statement =
                      db.getConnection().prepareStatement(sql)) {
