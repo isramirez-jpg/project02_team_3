@@ -203,6 +203,41 @@ public class DatabaseManager {
               FOREIGN KEY (category_id) REFERENCES categories(category_id)
           );
       """);
+      // Create Orders table
+      ddlStatement.execute("""
+        CREATE TABLE IF NOT EXISTS orders (
+         order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+         user_id INTEGER NOT NULL,
+        total_amount DECIMAL(10,2) NOT NULL
+            CHECK (total_amount >= 0),
+        status TEXT NOT NULL DEFAULT 'PENDING'
+            CHECK (status IN ('PENDING','COMPLETED','CANCELLED')),
+        created_at TEXT NOT NULL
+            DEFAULT (DATETIME('now','localtime')),
+        FOREIGN KEY (user_id)
+            REFERENCES users(user_id)
+            ON DELETE RESTRICT
+       );
+    """);
+      // Create Order Items table
+      ddlStatement.execute("""
+    CREATE TABLE IF NOT EXISTS order_items (
+        order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL
+            CHECK (quantity >= 1),
+        unit_price DECIMAL(10,2) NOT NULL
+            CHECK (unit_price >= 0),
+        FOREIGN KEY (order_id)
+            REFERENCES orders(order_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (product_id)
+            REFERENCES products(product_id)
+            ON DELETE RESTRICT
+    );
+""");
+
     }
   }
 
