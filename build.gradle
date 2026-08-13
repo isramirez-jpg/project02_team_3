@@ -43,10 +43,11 @@ dependencies {
     implementation 'org.mindrot:jbcrypt:0.4'
     // In-memory H2 database for DAO tests
     testImplementation 'com.h2database:h2:2.3.232'
-
     // TestFX for JavaFX interface testing
     testImplementation 'org.testfx:testfx-core:4.0.18'
     testImplementation 'org.testfx:testfx-junit5:4.0.18'
+    // Hamcrest required by TestFX
+    testImplementation 'org.hamcrest:hamcrest:3.0'
 }
 
 tasks.named('test') {
