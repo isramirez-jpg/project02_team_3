@@ -41,6 +41,12 @@ dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
     // Added jBCrypt dependency for password hashing and salting
     implementation 'org.mindrot:jbcrypt:0.4'
+    // In-memory H2 database for DAO tests
+    testImplementation 'com.h2database:h2:2.3.232'
+
+    // TestFX for JavaFX interface testing
+    testImplementation 'org.testfx:testfx-core:4.0.18'
+    testImplementation 'org.testfx:testfx-junit5:4.0.18'
 }
 
 tasks.named('test') {

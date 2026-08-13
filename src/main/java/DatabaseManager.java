@@ -55,13 +55,60 @@ public class DatabaseManager {
   // Create Constructor Method with parameter for unit tests
   public DatabaseManager(Connection sqlconn) {
     this.sqliteConnection = sqlconn;
+
     try {
-      try (Statement createStatement = sqliteConnection.createStatement()) {
-        createStatement.execute("PRAGMA foreign_keys = ON;");
+      try (Statement createStatement =
+                   sqliteConnection.createStatement()) {
+
+        createStatement.execute(
+                "PRAGMA foreign_keys = ON;"
+        );
       }
+
       initTables();
+
+      this.userDAO = new UserDAO(sqliteConnection);
+      this.customerDAO = new CustomerDAO(sqliteConnection);
+      this.itemDAO = new ItemDAO(sqliteConnection);
+
     } catch (SQLException e) {
-      e.printStackTrace();
+      throw new IllegalStateException(
+              "Database initialization failed.",
+              e
+      );
+    }
+  }
+
+
+  /**
+   * Creates a DatabaseManager using an existing connection.
+   * The initializeTables flag allows tests to provide
+   * their own database schema.
+   *
+   * @param sqlconn the database connection
+   * @param initializeTables true to create application tables,
+   *                         false to use an existing test schema
+   */
+  public DatabaseManager(
+          Connection sqlconn,
+          boolean initializeTables
+  ) {
+    this.sqliteConnection = sqlconn;
+
+    try {
+      if (initializeTables) {
+        initTables();
+      }
+
+      this.userDAO = new UserDAO(sqliteConnection);
+      this.customerDAO = new CustomerDAO(sqliteConnection);
+      this.itemDAO = new ItemDAO(sqliteConnection);
+
+    } catch (SQLException e) {
+      throw new IllegalStateException(
+              "Database initialization failed.",
+              e
+      );
     }
   }
 
