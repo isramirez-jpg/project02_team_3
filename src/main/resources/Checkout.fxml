@@ -3,6 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
@@ -22,6 +24,32 @@
            style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
     <Label text="Review your cart before placing your order."/>
+    <TableView fx:id="checkoutTable"
+               prefWidth="540"
+               prefHeight="220">
+
+        <columns>
+            <TableColumn fx:id="checkoutProductColumn"
+                         text="Product"
+                         prefWidth="180"/>
+
+            <TableColumn fx:id="checkoutPriceColumn"
+                         text="Unit Price"
+                         prefWidth="110"/>
+
+            <TableColumn fx:id="checkoutQuantityColumn"
+                         text="Quantity"
+                         prefWidth="100"/>
+
+            <TableColumn fx:id="checkoutTotalColumn"
+                         text="Item Total"
+                         prefWidth="120"/>
+        </columns>
+
+    </TableView>
+
+    <Label fx:id="checkoutSubtotalLabel"
+           text="Order Total: $0.00"/>
 
     <Label fx:id="statusLabel"/>
 
