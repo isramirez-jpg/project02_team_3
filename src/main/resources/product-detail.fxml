@@ -90,6 +90,13 @@
                         prefWidth="180.0"
                         prefHeight="40.0"
                         style="-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
+                <Button fx:id="viewCartButton"
+                        text="View Cart"
+                        onAction="#handleViewCart"
+                        prefWidth="180.0"
+                        prefHeight="40.0"
+                        style="-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;"/>
             </VBox>
 
         </HBox>

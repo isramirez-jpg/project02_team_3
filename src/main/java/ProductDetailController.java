@@ -1,9 +1,12 @@
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+
+import java.sql.SQLException;
 
 /**
  * Name: Ha Nguyen
@@ -19,6 +22,7 @@ public class ProductDetailController {
     private Stage stage;
     private DatabaseManager db;
     private Product product;
+    private String username;
 
     @FXML
     private ImageView productImageView;
@@ -50,13 +54,21 @@ public class ProductDetailController {
     /**
      * Sets the application data and selected product.
      *
+     * @param stage the application stage
+     * @param db the database manager
+     * @param product the selected product
+     * @param username the currently logged-in username
      */
-    public void setApplicationData(Stage stage,
-                                   DatabaseManager db,
-                                   Product product) {
+    public void setApplicationData(
+            Stage stage,
+            DatabaseManager db,
+            Product product,
+            String username) {
+
         this.stage = stage;
         this.db = db;
         this.product = product;
+        this.username = username;
 
         displayProduct();
     }
@@ -108,19 +120,19 @@ public class ProductDetailController {
         String imagePath = product.getImagePath();
 
         if (imagePath == null || imagePath.isBlank()) {
-            System.out.println("No image path for product: "
-                    + product.getProductName());
+            System.out.println(
+                    "No image path for product: "
+                            + product.getProductName()
+            );
             return;
         }
 
         try {
-            // Make sure the resource path starts with "/"
             if (!imagePath.startsWith("/")) {
                 imagePath = "/" + imagePath;
             }
 
-            var imageUrl =
-                    getClass().getResource(imagePath);
+            var imageUrl = getClass().getResource(imagePath);
 
             if (imageUrl == null) {
                 System.out.println(
@@ -129,7 +141,8 @@ public class ProductDetailController {
                 return;
             }
 
-            Image image = new Image(imageUrl.toExternalForm());
+            Image image =
+                    new Image(imageUrl.toExternalForm());
 
             productImageView.setImage(image);
 
@@ -142,9 +155,8 @@ public class ProductDetailController {
     }
 
     /**
-     * Adds the selected product to the shopping cart.
-     *
-     * Cart functionality will be connected here.
+     * Adds the selected product to the currently logged-in
+     * user's active shopping cart.
      */
     @FXML
     private void handleAddToCart() {
@@ -153,8 +165,71 @@ public class ProductDetailController {
             return;
         }
 
-        System.out.println(
-                "Add to cart: " + product.getProductName()
+        if (username == null || username.isBlank()) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Login Required",
+                    "Please log in before adding a product to your cart."
+            );
+            return;
+        }
+
+        try {
+            int userId = db.getUserIdByUsername(username);
+
+            if (userId == -1) {
+                showAlert(
+                        Alert.AlertType.ERROR,
+                        "User Error",
+                        "Unable to find the current user."
+                );
+                return;
+            }
+
+            CartDao cartDao = new CartDao(db);
+
+            // Get the user's existing active cart,
+            // or create one if they do not have one.
+            Cart activeCart =
+                    cartDao.getOrCreateActiveCart(userId);
+
+            // Add one of the selected product to the cart.
+            cartDao.addProduct(
+                    activeCart.getCartId(),
+                    product.getProductId(),
+                    1
+            );
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Added to Cart",
+                    product.getProductName()
+                            + " has been added to your cart."
+            );
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Cart Error",
+                    "Unable to add the product to your cart."
+            );
+        }
+    }
+
+    /**
+     * Display Cart screen.
+     */
+    @FXML
+    private void handleViewCart() {
+        stage.setScene(
+                SceneFactory.create(
+                        SceneType.CART,
+                        stage,
+                        db
+                )
         );
     }
 
@@ -163,6 +238,7 @@ public class ProductDetailController {
      */
     @FXML
     private void handleBack() {
+
         stage.setScene(
                 SceneFactory.create(
                         SceneType.BROWSE_PRODUCT,
@@ -170,5 +246,24 @@ public class ProductDetailController {
                         db
                 )
         );
+    }
+
+    /**
+     * Displays an alert message.
+     *
+     * @param type alert type
+     * @param title alert title
+     * @param message alert message
+     */
+    private void showAlert(
+            Alert.AlertType type,
+            String title,
+            String message) {
+
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

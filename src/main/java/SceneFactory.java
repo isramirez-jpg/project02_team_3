@@ -684,7 +684,8 @@ public class SceneFactory {
       controller.setApplicationData(
               stage,
               db,
-              product
+              product,
+              currentUser
       );
 
       return new Scene(root);
