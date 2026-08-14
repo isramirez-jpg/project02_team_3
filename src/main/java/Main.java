@@ -25,7 +25,7 @@ public class Main extends Application {
     stage.setTitle("Cache Me Outside Clothing Co.");
 
     // set the team logo on the application window title bar and taskbar
-    stage.getIcons().add(new Image(getClass().getResourceAsStream("/team-logo.png")));
+    stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/team-logo.png")));
 
     // launch the LOGIN scene
     stage.setScene(SceneFactory.create(SceneType.LOGIN, stage, db));

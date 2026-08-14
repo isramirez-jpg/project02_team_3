@@ -122,11 +122,15 @@ public class SceneFactory {
     title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
     Button cartButton = new Button("Shopping Cart");
+    // 08/13/2026 - MQ - Apply blue-button css class from master stylesheet
+    cartButton.getStyleClass().add("blue-button");
     cartButton.setOnAction(e ->
         stage.setScene(create(SceneType.CART, stage, db))
     );
 
     Button browseProductButton = new Button("Browse Product");
+    // 08/13/2026 - MQ - Apply blue-button css class from master stylesheet
+    browseProductButton.getStyleClass().add("blue-button");
     browseProductButton.setOnAction(e ->
         stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
@@ -139,6 +143,8 @@ public class SceneFactory {
     if (currentUser != null &&
             "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
       Button catalogManagementButton = new Button("Catalog Management");
+      // 08/13/2026 - MQ - Apply blue-button css class from master stylesheet
+      catalogManagementButton.getStyleClass().add("blue-button");
       catalogManagementButton.setOnAction(e ->
               stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
       );
@@ -154,9 +160,9 @@ public class SceneFactory {
 
       // 08/13/2026 - MQ - comment out old inline style
       //managementTodoListButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
-      // 08/13/2026 - MQ - Apply admin-button css class from master stylesheet
+      // 08/13/2026 - MQ - Apply blue-button css class from master stylesheet
       // to the Admin To Do List button
-      managementTodoListButton.getStyleClass().add("admin-button");
+      managementTodoListButton.getStyleClass().add("blue-button");
       managementTodoListButton.setOnAction(e ->
           stage.setScene(create(SceneType.ADMIN_TODO_LIST, stage, db))
       );
@@ -170,9 +176,9 @@ public class SceneFactory {
       Button adminButton = new Button("Admin User Dashboard");
       // 08/13/2026 - MQ - comment out old inline style
       //adminButton.setStyle("-fx-background-color: #146a9b; -fx-text-fill: white; -fx-font-weight: bold;");
-      // 08/13/2026 - MQ - Apply admin-button css class from master stylesheet
+      // 08/13/2026 - MQ - Apply blue-button css class from master stylesheet
       // to the Admin User Dashboard button
-      adminButton.getStyleClass().add("admin-button");
+      adminButton.getStyleClass().add("blue-button");
       adminButton.setOnAction(e -> stage.setScene(create(SceneType.ADMIN_USER_DASHBOARD, stage, db)));
       centerLayout.getChildren().add(adminButton);
     }
@@ -226,7 +232,8 @@ public class SceneFactory {
     ImageView teamLogoImageView = new ImageView();
     try {
       // get the team logo from the resources folder
-      Image teamLogoImage = new Image(SceneFactory.class.getResourceAsStream("/team-logo.png"));
+      Image teamLogoImage = new Image(SceneFactory.class.getResourceAsStream(
+          "/images/team-logo.png"));
       teamLogoImageView.setImage(teamLogoImage);
       // set the width to 120 pixels
       teamLogoImageView.setFitWidth(120);
