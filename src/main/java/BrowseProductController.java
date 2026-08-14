@@ -275,7 +275,14 @@ public class BrowseProductController {
             return;
         }
 
-        // Product detail navigation will be added next.
+        stage.setScene(
+                SceneFactory.create(
+                        SceneType.PRODUCT_DETAIL,
+                        stage,
+                        db,
+                        selectedProduct
+                )
+        );
     }
 
     /**
