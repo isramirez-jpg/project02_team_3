@@ -56,6 +56,11 @@ public class DatabaseManager {
   public DatabaseManager(Connection sqlconn) {
     this.sqliteConnection = sqlconn;
 
+    // 08/13/2026 - MQ - Implement Reset Password - Add DAO instantiation statements
+    this.userDAO = new UserDAO(sqliteConnection);
+    this.customerDAO = new CustomerDAO(sqliteConnection);
+    this.itemDAO = new ItemDAO(sqliteConnection);
+
     try {
       try (Statement createStatement =
                    sqliteConnection.createStatement()) {
@@ -122,12 +127,12 @@ public class DatabaseManager {
       ddlStatement.execute("""
           CREATE TABLE IF NOT EXISTS roles (
               role_id INTEGER PRIMARY KEY AUTOINCREMENT,
-              role_name TEXT NOT NULL UNIQUE CHECK (role_name IN ('USER', 'ADMIN', 'DEVELOPER'))
+              role_name TEXT NOT NULL UNIQUE CHECK (role_name IN ('USER', 'ADMIN'))
           );
       """);
 
       // Populate roles
-      ddlStatement.execute("INSERT OR IGNORE INTO roles (role_id, role_name) VALUES (1, 'USER'), (2, 'ADMIN'), (3, 'DEVELOPER');");
+      ddlStatement.execute("INSERT OR IGNORE INTO roles (role_id, role_name) VALUES (1, 'USER'), (2, 'ADMIN');");
 
       // Create the Users table
       ddlStatement.execute("""
@@ -138,6 +143,8 @@ public class DatabaseManager {
               email TEXT NOT NULL UNIQUE,
               role_id INTEGER NOT NULL DEFAULT 1,
               is_active INTEGER NOT NULL DEFAULT 1,
+              security_question TEXT,
+              security_answer_hash TEXT,              
               created_at TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
               FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE RESTRICT
           );
