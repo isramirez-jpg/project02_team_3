@@ -54,19 +54,19 @@
 
                 <ComboBox fx:id="sizeComboBox"
                           promptText="All Sizes"
-                          prefWidth="120.0"/>
+                          prefWidth="100.0"/>
 
                 <Label text="Gender:"/>
 
                 <ComboBox fx:id="genderComboBox"
                           promptText="All Genders"
-                          prefWidth="130.0"/>
+                          prefWidth="100.0"/>
 
                 <Label text="Category:"/>
 
                 <ComboBox fx:id="categoryComboBox"
                           promptText="All Categories"
-                          prefWidth="150.0"/>
+                          prefWidth="120.0"/>
 
             </HBox>
 
