@@ -2,7 +2,11 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import java.sql.SQLException;
 import java.util.List;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
+import java.math.BigDecimal;
+import javafx.scene.control.Label;
 
 /**
  * @author Isabel Ramirez
@@ -16,6 +20,25 @@ public class CartController {
     private CartDao cartDao;
     private Cart activeCart;
     private List<CartItem> cartItems;
+    @FXML
+    private void initialize() {
+
+        productColumn.setCellValueFactory(
+                new PropertyValueFactory<>("productName")
+        );
+
+        priceColumn.setCellValueFactory(
+                new PropertyValueFactory<>("unitPrice")
+        );
+
+        quantityColumn.setCellValueFactory(
+                new PropertyValueFactory<>("quantity")
+        );
+
+        totalColumn.setCellValueFactory(
+                new PropertyValueFactory<>("itemTotal")
+        );
+    }
 
     public void setApplicationData(
             Stage stage,
@@ -42,24 +65,111 @@ public class CartController {
             cartItems = cartDao.findItemsByCartId(
                     activeCart.getCartId()
             );
-            cartListView.getItems().clear();
+            cartTable.getItems().clear();
+            cartTable.getItems().addAll(cartItems);
 
-            if (cartItems.isEmpty()) {
-                cartListView.getItems().add("Your cart is currently empty.");
-            } else {
-                for (CartItem item : cartItems) {
-                    cartListView.getItems().add(
-                            item.getProductName()
-                                    + " x"
-                                    + item.getQuantity()
-                    );
-                }
+            BigDecimal subtotal = BigDecimal.ZERO;
+
+            for (CartItem item : cartItems) {
+                subtotal = subtotal.add(
+                        item.getItemTotal()
+                );
             }
+
+            subtotalLabel.setText(
+                    "Subtotal: $" + subtotal
+            );
             System.out.println(
                     "Loaded cart " + activeCart.getCartId()
                     + " with " + cartItems.size() + " items."
             );
         } catch (SQLException e) { e.printStackTrace(); }
+    }
+    @FXML
+    private void increaseQuantity() {
+
+        CartItem selectedItem =
+                cartTable.getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedItem == null) {
+            return;
+        }
+
+        try {
+            cartDao.updateQuantity(
+                    selectedItem.getCartItemId(),
+                    selectedItem.getQuantity() + 1
+            );
+            cartDao.updateQuantity(
+                    selectedItem.getCartItemId(),
+                    selectedItem.getQuantity() + 1
+            );
+
+            cartStatusLabel.setText("");
+
+            loadCart();
+
+            loadCart();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        catch (IllegalArgumentException e) {
+            cartStatusLabel.setText(e.getMessage());
+            cartStatusLabel.setStyle("-fx-text-fill: red;");
+        }
+    }
+
+    @FXML
+    private void decreaseQuantity() {
+
+        CartItem selectedItem =
+                cartTable.getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedItem == null) {
+            return;
+        }
+
+        if (selectedItem.getQuantity() <= 1) {
+            return;
+        }
+
+        try {
+            cartDao.updateQuantity(
+                    selectedItem.getCartItemId(),
+                    selectedItem.getQuantity() - 1
+            );
+
+            loadCart();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void removeSelectedItem() {
+
+        CartItem selectedItem =
+                cartTable.getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedItem == null) {
+            return;
+        }
+
+        try {
+            cartDao.removeItem(
+                    selectedItem.getCartItemId()
+            );
+
+            loadCart();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -83,5 +193,22 @@ public class CartController {
         );
     }
     @FXML
-    private ListView<String> cartListView;
+    private TableView<CartItem> cartTable;
+
+    @FXML
+    private TableColumn<CartItem, String> productColumn;
+
+    @FXML
+    private TableColumn<CartItem, BigDecimal> priceColumn;
+
+    @FXML
+    private TableColumn<CartItem, Integer> quantityColumn;
+
+    @FXML
+    private TableColumn<CartItem, BigDecimal> totalColumn;
+    @FXML
+    private Label subtotalLabel;
+    @FXML
+    private Label cartStatusLabel;
+
 }

@@ -18,13 +18,13 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 
 
 ## Team & Slice Ownership
-| Slice | Owner | GitHub username | Issues | Branch(es)                                                                                                                                                                                              | PR(s)                        | Enhancement chosen | Status         |
-|-------|-------|-----------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|--------------------|----------------|
-| 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, #10 | miguel/initial-commit-login-scene-skeleton, miguel/registered-users-fxml-scene, miguel/dao-login-scene-controller, miguel/ai-code-review-fix, miguel/add-master-stylesheet, miguel/add-password-reset, miguel/revise-main-scene-buttons | #12, #13, #17, #19, #24, #27 | TableView/ListView, custom reusable FXML component | complete |
-| 2 — Catalog | Ha Nguyen | hanguyen1979 |#5, #6, #7 | Ha/catalog skeleton                                                                                                                                                                                     | PR #14, #20, #22             |Notifications / Alerts | in-progress    |
-| 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | isabel/cart-database-dao, isabel/cart-clean-integration                                                                                                                                                 | #15, # 18, #21               | JavaFX TableView<CartItem> | in-progress    |
-| 4 — Order History & Management | | | |                                                                                                                                                                                                         |                              | | WILL NOT DO    |
-| 5 - Reviews & Ratings | | | |                                                                                                                                                                                                         |                              | | WILL NOT DO    |
+| Slice | Owner | GitHub username | Issues | Branch(es)                                                                                                                                                                                              | PR(s)                        | Enhancement chosen | Status      |
+|-------|-------|-----------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|--------------------|-------------|
+| 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, #10 | miguel/initial-commit-login-scene-skeleton, miguel/registered-users-fxml-scene, miguel/dao-login-scene-controller, miguel/ai-code-review-fix, miguel/add-master-stylesheet, miguel/add-password-reset, miguel/revise-main-scene-buttons | #12, #13, #17, #19, #24, #27 | TableView/ListView, custom reusable FXML component | complete    |
+| 2 — Catalog | Ha Nguyen | hanguyen1979 |#5, #6, #7 | Ha/catalog skeleton                                                                                                                                                                                     | PR #14, #20, #22             |Notifications / Alerts | in-progress |
+| 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | isabel/cart-database-dao, isabel/cart-clean-integration                                                                                                                                                 | #15, # 18, #21, #25, #30     | JavaFX TableView<CartItem> | Complete    |
+| 4 — Order History & Management | | | |                                                                                                                                                                                                         |                              | | WILL NOT DO |
+| 5 - Reviews & Ratings | | | |                                                                                                                                                                                                         |                              | | WILL NOT DO |
 
 _Status values: planned · in-progress · complete_
 
@@ -44,17 +44,25 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 3>: payment-API stub — out of scope.
 
 ## Code Review Log
-| PR   | Author         | Human reviewer(s)               | AI review (link)                                             | Outcome   |
-|------|----------------|---------------------------------|--------------------------------------------------------------|-----------|
-| #12  | Miguel Quezada | Isabel Ramirez                  |                                                              | Approved  |
-| #13  | Miguel Quezada | Ha Nguyen                       |                                                              | Approved  |
-| #14  | Ha Nguyen      | Miguel Quezada                  | <link or commit>                                             | Approved  |
-| #15  | Isabel Ramirez | Miguel Quezada                  |                                                              | Approved  |
-| #18  | Isabel Ramirez | Ha Nguyen                       |                                                              | Approved  |
-| #19  | Miguel Quezada | Isabel Ramirez                  | https://claude.ai/chat/464cdb67-61f3-4ba3-8276-8bb66ab95911  | Approved  |
-| #20  | Ha Nguyen      | Isabel Ramirez & Miguel Quezada |                                                              | Approved  |
-| #21  | Isabel Ramirez | Miguel Quezada  & Ha Nguyen     | https://claude.ai/share/40911211-0ae5-4287-8c93-4bad04e4e800 | Approved  |  
-| #22  | Ha Nguyuen     | Miguel Quezada  & Isabel Ramirez|https://github.com/isramirez-jpg/project02_team_3/pull/22     | Pending  |
+| PR  | Author         | Human reviewer(s) | AI review (link) | Outcome |
+|-----|----------------|-|-------|---------|
+| #12 | Miguel Quezada | Isabel Ramirez |       | Approved |
+| #13 | Miguel Quezada | Ha Nguyen |       | Approved |
+| #14 | Ha Nguyen      | Miguel Quezada | <link or commit> | Approved |
+| #15 | Isabel Ramirez | Miguel Quezada |       | Approved |
+| #18 | Isabel Ramirez | Ha Nguyen |       | Approved |
+| #19 | Miguel Quezada | Isabel Ramirez | https://claude.ai/chat/464cdb67-61f3-4ba3-8276-8bb66ab95911 | Approved |
+| #20 | Ha Nguyen      | Isabel Ramirez & Miguel Quezada |       | Approved |
+| #21 | Isabel Ramirez | Miguel Quezada  & Ha Nguyen | https://claude.ai/share/40911211-0ae5-4287-8c93-4bad04e4e800 | Approved |  
+| #22 | Ha Nguyen      | Miguel Quezada  & Isabel Ramirez|https://github.com/isramirez-jpg/project02_team_3/pull/22 | Pending |
+| #23 | Miguel Quezada | | |  |
+| #24 | Miguel Quezada | ||  |
+| #25 | Isabel Ramirez | | |  |
+| #26 | Ha Nguyuen     | | | |       
+| #27 | Miguel Quezada | | |         |
+| #28 | Ha Nguyen      | ||         |
+| #29 | Miguel Quezada | | |         |
+| #30 | Isabel Ramirez | | |         |
 
 ## AI Usage Log
 

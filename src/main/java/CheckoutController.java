@@ -3,8 +3,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
-
-
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.SQLException;
@@ -28,6 +31,42 @@ public class CheckoutController {
 
     @FXML
     private Button placeOrderButton;
+    @FXML
+    private TableView<CartItem> checkoutTable;
+
+    @FXML
+    private TableColumn<CartItem, String> checkoutProductColumn;
+
+    @FXML
+    private TableColumn<CartItem, BigDecimal> checkoutPriceColumn;
+
+    @FXML
+    private TableColumn<CartItem, Integer> checkoutQuantityColumn;
+
+    @FXML
+    private TableColumn<CartItem, BigDecimal> checkoutTotalColumn;
+
+    @FXML
+    private Label checkoutSubtotalLabel;
+    @FXML
+    private void initialize() {
+
+        checkoutProductColumn.setCellValueFactory(
+                new PropertyValueFactory<>("productName")
+        );
+
+        checkoutPriceColumn.setCellValueFactory(
+                new PropertyValueFactory<>("unitPrice")
+        );
+
+        checkoutQuantityColumn.setCellValueFactory(
+                new PropertyValueFactory<>("quantity")
+        );
+
+        checkoutTotalColumn.setCellValueFactory(
+                new PropertyValueFactory<>("itemTotal")
+        );
+    }
 
     /**
      * Receives the application dependencies and active cart ID.
@@ -44,6 +83,46 @@ public class CheckoutController {
         this.stage = stage;
         this.db = db;
         this.cartId = cartId;
+        loadOrderSummary();
+    }
+    private void loadOrderSummary() {
+
+        CartDao cartDao =
+                new CartDao(db);
+
+        try {
+
+            List<CartItem> items =
+                    cartDao.findItemsByCartId(cartId);
+
+            checkoutTable.getItems().clear();
+            checkoutTable.getItems().addAll(items);
+
+            BigDecimal total =
+                    BigDecimal.ZERO;
+
+            for (CartItem item : items) {
+                total = total.add(
+                        item.getItemTotal()
+                );
+            }
+
+            checkoutSubtotalLabel.setText(
+                    "Order Total: $" + total
+            );
+
+        } catch (SQLException e) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Unable to load checkout items",
+                    e
+            );
+
+            statusLabel.setText(
+                    "Unable to load order summary."
+            );
+        }
     }
 
     /**
