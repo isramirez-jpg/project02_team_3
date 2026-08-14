@@ -43,6 +43,8 @@ public class SceneFactory {
     return switch (type) {
       case MAIN      -> buildMainScene(stage, db);
       case LOGIN     -> buildLoginScene(stage, db);
+      // 08/13/2026 - MQ - Implement Reset Password
+      case RESET_PASSWORD -> buildResetPasswordScene(stage, db);
       case ADMIN_TODO_LIST -> buildDashboardScene(stage, db);
       // Constructs the Admin UI view from its FXML layout
       // and initializes its controller
@@ -279,11 +281,26 @@ public class SceneFactory {
     zipField.setPrefWidth(90);
 
     ComboBox<String> roleBox = new ComboBox<>();
-    roleBox.getItems().addAll("USER", "ADMIN", "DEVELOPER");
+    roleBox.getItems().addAll("USER", "ADMIN");
     roleBox.setValue("USER");
 
+    // 08/13/2026 - MQ - Implement Reset Password - Add Security Question Controls
+    ComboBox<String> securityQuestionBox = new ComboBox<>();
+    securityQuestionBox.getItems().addAll(
+        "What was the mascot of your first school?",
+        "What is your favorite musical artist?",
+        "What was the name of your first elementary school?",
+        "What is your mother's maiden name?"
+    );
+    securityQuestionBox.setPromptText("Select a Security Question");
+    securityQuestionBox.setMaxWidth(Double.MAX_VALUE); // Expand to fit layout
+
+    TextField securityAnswerField = new TextField();
+    securityAnswerField.setPromptText("Security Question Answer");
+
     // Set all registration elements to hidden initially
-    Region[] regOnlyFields = { nameRow, emailField, phoneField, streetField, cityStateZipRow, roleBox };
+    // 08/13/2026 - MQ - Implement Reset Password - Include Security Question Fields
+    Region[] regOnlyFields = { nameRow, emailField, phoneField, streetField, cityStateZipRow, roleBox, securityQuestionBox, securityAnswerField };
     for (Region field : regOnlyFields) {
       field.setManaged(false);
       field.setVisible(false);
@@ -297,7 +314,14 @@ public class SceneFactory {
     // Set text color using inline style
     toggleModeLink.setStyle("-fx-text-fill: #146a9b;");
 
-    // Flag to track whether logging in or registering
+    // 08/13/2026 - MQ - Implement Reset Password
+    Hyperlink forgotPasswordLink = new Hyperlink("Forgot password?");
+    forgotPasswordLink.setStyle("-fx-text-fill: #146a9b;");
+    forgotPasswordLink.setOnAction(e ->
+        stage.setScene(create(SceneType.RESET_PASSWORD, stage, db))
+    );
+
+    // 08/13/2026 - MQ - Implement Reset Password - Flag to track whether logging in or registering
     final boolean[] isRegisterMode = { false };
 
     toggleModeLink.setOnAction(e -> {
@@ -307,6 +331,14 @@ public class SceneFactory {
       title.setText(showReg ? "Create New Account" : "Welcome. Please Log In");
       submitButton.setText(showReg ? "Register & Continue" : "Login");
       toggleModeLink.setText(showReg ? "Already have an account? Log in" : "Need an account? Register here");
+
+      // 08/13/2026 - MQ - Implement Reset Password - 1. Hide Team Logo image in Registration mode
+      teamLogoImageView.setVisible(!showReg);
+      teamLogoImageView.setManaged(!showReg);
+
+      // 08/13/2026 - MQ - Implement Reset Password - 2. Hide "Forgot password?" link in Registration mode
+      forgotPasswordLink.setVisible(!showReg);
+      forgotPasswordLink.setManaged(!showReg);
 
       // Toggle field visibility
       for (Region field : regOnlyFields) {
@@ -344,11 +376,23 @@ public class SceneFactory {
           return;
         }
 
+        // 08/13/2026 - MQ - Implement Reset Password
+        String question = securityQuestionBox.getValue();
+        String answer = securityAnswerField.getText().trim();
+
+        if (question == null || answer.isEmpty()) {
+          statusLabel.setStyle("-fx-text-fill: red;");
+          statusLabel.setText("Security question and answer are required.");
+          return;
+        }
+
+        // 08/13/2026 - MQ - Implement Reset Password - Pass question & answer to database registration
         // save boolean success value
         boolean success = db.getUserDAO().registerUser(
             user, pass, email, firstName, lastName,
-            phone, street, city, state, zip, role
+            phone, street, city, state, zip, role, question, answer
         );
+
         if (success) {
           // Set currentUser session after registration
           currentUser = user;
@@ -381,8 +425,13 @@ public class SceneFactory {
         phoneField,
         streetField,
         cityStateZipRow,
+        // 08/13/2026 - MQ - Implement Reset Password - Add Security Question Controls
+        securityQuestionBox,
+        securityAnswerField,
         roleBox,
         submitButton,
+        // 08/13/2026 - MQ - Implement Reset Password - Add forgot password link
+        forgotPasswordLink,
         toggleModeLink,
         statusLabel
     );
@@ -697,5 +746,27 @@ public class SceneFactory {
       );
     }
   }
+
+  // 08/13/2026 - MQ - Implement Reset Password
+  /**
+   * Builds the RESET_PASSWORD scene. Loads the fxml password layout scene.
+   */
+  private static Scene buildResetPasswordScene(Stage stage, DatabaseManager db) {
+    try {
+      // load the fxml scene
+      FXMLLoader loadFxmlScene = new FXMLLoader(SceneFactory.class.getResource("/ResetPassword.fxml"));
+      Parent root = loadFxmlScene.load();
+
+      ResetPasswordController controller = loadFxmlScene.getController();
+      controller.setApplicationData(stage, db);
+
+      return new Scene(root, 600, 520);
+    } catch (IOException e) {
+      // cate error and display a message
+      LOGGER.log(Level.SEVERE, "Sorry. Unable to load ResetPassword.fxml", e);
+      throw new IllegalStateException("Sorry. Illegal State Exception. Unable to load ResetPassword.fxml.", e);
+    }
+  }
+
   //endregion
 }

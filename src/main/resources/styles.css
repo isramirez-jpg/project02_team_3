@@ -13,6 +13,11 @@
    Login Module Styles
    ====================================================== */
 
+/* 08/13/2026 - MQ - Implement Reset Password - Add Reset Password Button style */
+.password-reset-button {
+  -fx-background-color: #146a9b;
+  -fx-text-fill: white;
+}
 
 /* ======================================================
    Shopping Chart Styles
