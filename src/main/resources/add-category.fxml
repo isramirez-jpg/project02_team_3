@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.HBox?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="AddCategoryController"
       alignment="CENTER"
@@ -32,15 +33,20 @@
               prefRowCount="4"
               maxWidth="300"/>
 
-    <Button text="Save Category"
-            onAction="#handleSaveCategory"/>
+    <HBox spacing="10.0"
+          alignment="CENTER">
 
-    <Button text="Clear"
-            onAction="#handleClear"/>
+        <Button text="Save Category"
+                onAction="#handleSaveCategory"/>
 
-    <Button text="Back"
-            onAction="#handleBack"/>
+        <Button text="Clear"
+                onAction="#handleClear"/>
+
+        <Button text="Back"
+                onAction="#handleBack"/>
+    </HBox>
 
     <Label fx:id="messageLabel"/>
 
 </VBox>
+
