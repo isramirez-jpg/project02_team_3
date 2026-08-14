@@ -253,6 +253,10 @@ public class SceneFactory {
     PasswordField passwordField = new PasswordField();
     passwordField.setPromptText("Password");
 
+    // 08/13/2026 - MQ - Assign explicit IDs to controls
+    usernameField.setId("usernameField");
+    passwordField.setId("passwordField");
+
     // These Fields are Hidden during login, but shown during registration
     TextField firstNameField = new TextField();
     firstNameField.setPromptText("First Name");
@@ -317,6 +321,10 @@ public class SceneFactory {
     statusLabel.setStyle("-fx-text-fill: red;");
 
     Button submitButton = new Button("Login");
+
+    // 08/13/2026 - MQ - Assign explicit IDs to controls
+    submitButton.setId("loginButton");
+
     Hyperlink toggleModeLink = new Hyperlink("Need an account? Register here");
     // Set text color using inline style
     toggleModeLink.setStyle("-fx-text-fill: #146a9b;");
