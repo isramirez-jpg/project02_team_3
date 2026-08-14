@@ -6,6 +6,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Name: Miguel Quezada
+ * Date: 2026-08-02
+ * This class contains unit tests for the DatabaseManager class,
+ * specifically focusing on user authentication functionality.
+ */
 public class DatabaseManagerTest {
 
   private DatabaseManager databaseManager;
@@ -33,11 +39,15 @@ public class DatabaseManagerTest {
         "Seattle",
         "WA",
         "98109",
-        "USER"
+        "USER",
+        "What is your favorite musical artist?",
+        "Pearl Jam"
     );
   }
 
   /**
+   * Name: Miguel Quezada
+   * Date: 2026-08-02
    * Verifies that authenticateUser() method returns true when
    * given a valid matching username and password.
    */
