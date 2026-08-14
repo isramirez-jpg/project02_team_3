@@ -16,13 +16,13 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 <One-line description.> CST 338 Project 2 — Team **<Team Name>**.
 
 ## Team & Slice Ownership
-| Slice | Owner | GitHub username | Issues | Branch(es)                                                 | PR(s)          | Enhancement chosen | Status |
-|-------|-------|-----------------|--------|------------------------------------------------------------|----------------|--------------------|--------|
-| 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, #10, #11 | miguel/initial-commit-login-scene-skeleton, miguel/registered-users-fxml-scene | #12, #13       | TableView/ListView, custom reusable FXML component, Supabase backend (with local persistence) | in-progress|
+| Slice | Owner | GitHub username | Issues | Branch(es)                                                 | PR(s)                   | Enhancement chosen | Status |
+|-------|-------|-----------------|--------|------------------------------------------------------------|-------------------------|--------------------|--------|
+| 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, #10, #11 | miguel/initial-commit-login-scene-skeleton, miguel/registered-users-fxml-scene | #12, #13, #17, #19, #24 | TableView/ListView, custom reusable FXML component, Supabase backend (with local persistence) | in-progress|
 | 2 — Catalog | Ha Nguyen | hanguyen1979 |#5, #6, #7 | Ha/catalog skeleton                                        | PR #14, #20, #22        |Notifications / Alerts | in-progress |
-| 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | isabel/cart-database-dao, isabel/cart-clean-integration    | #15, # 18, #21 | JavaFX TableView<CartItem> | in-progress|
-| 4 — Order History & Management | | | |                                                            |                | | WILL NOT DO|
-| 5 - Reviews & Ratings | | | |                                                            |                | | WILL NOT DO|
+| 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | isabel/cart-database-dao, isabel/cart-clean-integration    | #15, # 18, #21          | JavaFX TableView<CartItem> | in-progress|
+| 4 — Order History & Management | | | |                                                            |                         | | WILL NOT DO|
+| 5 - Reviews & Ratings | | | |                                                            |                         | | WILL NOT DO|
 
 _Status values: planned · in-progress · complete_
 
@@ -53,6 +53,14 @@ Issue if the team later decides to attempt it for extra credit._
 | #20  | Ha Nguyen      | Isabel Ramirez & Miguel Quezada |                                                              | Approved  |
 | #21  | Isabel Ramirez | Miguel Quezada  & Ha Nguyen     | https://claude.ai/share/40911211-0ae5-4287-8c93-4bad04e4e800 | Approved  |  
 | #22  | Ha Nguyuen     | Miguel Quezada  & Isabel Ramirez|https://github.com/isramirez-jpg/project02_team_3/pull/22     | Pending  |
+
+## Test Logins
+
+| Username | Password | Role | First Name | Last Name | Security Question | Security Answer |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `Mickey2026` | `Bolaochotintandd!` | **ADMIN** | Mickey | Mouse | What is your favorite musical artist? | My Chemical Romance |
+| `Queenpenelope` | `Guavakiwid8!` | **USER** | Anne | Hathaway | What is your favorite musical artist? | Pearl Jam |
+| `Laurapau26` | `Mibandatocarock7!` | **USER** | Laura | Pausini | What is your favorite musical artist? | Linkin Park |
 
 
 ## AI Usage Log

@@ -30,11 +30,14 @@ public class UserDAO {
    * @param roleName  the role name to assign to the new user (e.g., "USER", "ADMIN")
    * @return true if the user was successfully registered, otherwise false
    */
+  // 08/13/2026 - MQ - Implement Reset Password - Pass question & answer to database registration
   public boolean registerUser(String username, String password, String email,
       String firstName, String lastName, String phone,
-      String street, String city, String state, String zip, String roleName) {
+      String street, String city, String state, String zip, String roleName,
+      String securityQuestion, String securityAnswer) {
 
-    String insertUserSql = "INSERT INTO users (username, password_hash, email, role_id) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name = ?));";
+    // 08/13/2026 - MQ - Implement Reset Password - Pass question & answer to database registration
+    String insertUserSql = "INSERT INTO users (username, password_hash, email, role_id, security_question, security_answer_hash) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name = ?), ?, ?);";
     String insertCustomerSql = "INSERT INTO customers (user_id, first_name, last_name, phone) VALUES (?, ?, ?, ?);";
     String insertAddressSql = "INSERT INTO addresses (customer_id, street, city, state, zip_code) VALUES (?, ?, ?, ?, ?);";
 
@@ -50,6 +53,13 @@ public class UserDAO {
         pStatement.setString(2, hashedPassword);
         pStatement.setString(3, email);
         pStatement.setString(4, roleName);
+        // 08/13/2026 - MQ - Implement Reset Password - Bind security question and hashed security answer
+        pStatement.setString(5, securityQuestion);
+        // 08/13/2026 - MQ - Implement Reset Password - Bind security question and hashed security answer
+        String hashedAnswer = (securityAnswer != null && !securityAnswer.isBlank())
+            ? BCrypt.hashpw(securityAnswer.trim().toLowerCase(), BCrypt.gensalt())
+            : null;
+        pStatement.setString(6, hashedAnswer);
         pStatement.executeUpdate();
 
         ResultSet rs = pStatement.getGeneratedKeys();
@@ -183,4 +193,77 @@ public class UserDAO {
     }
     return usersList;
   }
+
+  /**
+   * Gets the security question for the username that was passed in.
+   */
+  public String getSecurityQuestion(String username) {
+    String query = "SELECT security_question FROM users WHERE LOWER(username) = LOWER(?)";
+
+    try (PreparedStatement pStatement = connection.prepareStatement(query)) {
+
+      pStatement.setString(1, username.trim());
+
+      try (ResultSet rSet = pStatement.executeQuery()) {
+        if (rSet.next()) {
+          return rSet.getString("security_question");
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  /**
+   * Verify the answer to the security question using BCrypt library, then update the password.
+   */
+  public boolean verifyAndResetPassword(String username, String answerInput, String newPassword) {
+    String selectQuery = "SELECT security_answer_hash FROM users WHERE LOWER(username) = LOWER(?)";
+
+    try (PreparedStatement pStatement = connection.prepareStatement(selectQuery)) {
+
+      pStatement.setString(1, username.trim());
+
+      try (ResultSet rSet = pStatement.executeQuery()) {
+        if (rSet.next()) {
+          String storedHash = rSet.getString("security_answer_hash");
+
+          // 08/13/2026 - MQ - Implement Reset Password (Case-insensitive verification)
+          if (storedHash != null && BCrypt.checkpw(answerInput.trim().toLowerCase(), storedHash)) {
+            return updatePassword(username, newPassword);
+          }
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  /**
+   * Hashes the new password and update the password in database with the new one.
+   */
+  public boolean updatePassword(String username, String newPassword) {
+    String updateQuery = "UPDATE users SET password_hash = ? WHERE LOWER(username) = LOWER(?)";
+    String newHash = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
+    try (PreparedStatement pStatement = connection.prepareStatement(updateQuery)) {
+
+      pStatement.setString(1, newHash);
+      pStatement.setString(2, username.trim());
+
+      return pStatement.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
 }

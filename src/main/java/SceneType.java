@@ -22,5 +22,7 @@ public enum SceneType {
   CATALOG_MANAGEMENT,
   ADD_PRODUCT,
   PRODUCT_DETAIL,
-  CHECKOUT
+  CHECKOUT,
+  // 08/13/2026 - MQ - Implement Reset Password - add reset password scene
+  RESET_PASSWORD
 }
