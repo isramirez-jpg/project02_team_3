@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
 // Import the exception class thrown when an FXML file cant be found, read, or loaded
 import java.io.IOException;
 // Loads an object hierarchy from an XML document
@@ -53,6 +54,32 @@ public class SceneFactory {
       case CATALOG_MANAGEMENT -> buildCatalogManagementScene(stage, db);
       case ADD_PRODUCT -> buildAddProductScene(stage, db);
       case CHECKOUT -> buildCheckoutScene(stage, db);
+      // Product detail cannot be created without a selected Product.
+      case PRODUCT_DETAIL -> throw new IllegalArgumentException(
+              "A Product is required for PRODUCT_DETAIL."
+      );
+    };
+  }
+
+  /**
+   * Creates a Scene for a selected Product.
+   *
+   * This overloaded method is used when a scene requires a Product
+   * object, such as the Product Detail scene.
+   *
+   */
+  public static Scene create(
+          SceneType type,
+          Stage stage,
+          DatabaseManager db,
+          Product product) {
+
+    return switch (type) {
+      case PRODUCT_DETAIL ->
+              buildProductDetailScene(stage, db, product);
+
+      default ->
+              create(type, stage, db);
     };
   }
 
@@ -102,13 +129,19 @@ public class SceneFactory {
         stage.setScene(create(SceneType.BROWSE_PRODUCT, stage, db))
     );
 
-    Button catalogManagementButton = new Button("Catalog Management");
-    catalogManagementButton.setOnAction(e ->
-        stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
-    );
-
-    VBox centerLayout = new VBox(16, title, cartButton, browseProductButton, catalogManagementButton);
+    VBox centerLayout = new VBox(16, title, cartButton, browseProductButton);
     centerLayout.setAlignment(Pos.CENTER);
+
+    //Only show Catalog Management button if the
+    //current logged-in user has ADMIN role
+    if (currentUser != null &&
+            "ADMIN".equalsIgnoreCase(db.getUserDAO().getUserRole(currentUser))) {
+      Button catalogManagementButton = new Button("Catalog Management");
+      catalogManagementButton.setOnAction(e ->
+              stage.setScene(create(SceneType.CATALOG_MANAGEMENT, stage, db))
+      );
+      centerLayout.getChildren().add(catalogManagementButton);
+    }
 
     // Only show the Admin To do List button if the
     // current logged-in user has ADMIN role
@@ -624,6 +657,43 @@ public class SceneFactory {
       throw new IllegalStateException(
           "Unable to load add-product.fxml.",
           e
+      );
+    }
+  }
+
+  /**
+   * Builds the Product Detail scene using product-detail.fxml.
+   */
+  private static Scene buildProductDetailScene(
+          Stage stage,
+          DatabaseManager db,
+          Product product) {
+
+    try {
+      FXMLLoader loader = new FXMLLoader(
+              SceneFactory.class.getResource(
+                      "/product-detail.fxml"
+              )
+      );
+
+      Parent root = loader.load();
+
+      ProductDetailController controller =
+              loader.getController();
+
+      controller.setApplicationData(
+              stage,
+              db,
+              product,
+              currentUser
+      );
+
+      return new Scene(root);
+
+    } catch (IOException e) {
+      throw new RuntimeException(
+              "Unable to load product-detail.fxml",
+              e
       );
     }
   }
