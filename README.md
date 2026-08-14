@@ -21,7 +21,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 | Slice | Owner | GitHub username | Issues | Branch(es)                                                                                                                                                                                              | PR(s)                        | Enhancement chosen | Status      |
 |-------|-------|-----------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|--------------------|-------------|
 | 1 — Accounts | Miguel Quezada | mquezada2026 | #8, #9, #10 | miguel/initial-commit-login-scene-skeleton, miguel/registered-users-fxml-scene, miguel/dao-login-scene-controller, miguel/ai-code-review-fix, miguel/add-master-stylesheet, miguel/add-password-reset, miguel/revise-main-scene-buttons | #12, #13, #17, #19, #24, #27 | TableView/ListView, custom reusable FXML component | complete    |
-| 2 — Catalog | Ha Nguyen | hanguyen1979 |#5, #6, #7 | Ha/catalog skeleton                                                                                                                                                                                     | PR #14, #20, #22, #26, #28, #31, #33            |Notifications / Alerts | in-progress |
+| 2 — Catalog | Ha Nguyen | hanguyen1979 |#5, #6, #7 | Ha/catalog skeleton                                                                                                                                                                                     | PR #14, #20, #22, #26, #28, #31, #33            |Notifications / Alerts/ JavaFX TableView | Complete |
 | 3 — Cart & Checkout | Isabel Ramirez | isramirez-jpg | #1 #2 #3 #4 | isabel/cart-database-dao, isabel/cart-clean-integration                                                                                                                                                 | #15, # 18, #21, #25, #30     | JavaFX TableView<CartItem> | Complete    |
 | 4 — Order History & Management | | | |                                                                                                                                                                                                         |                              | | WILL NOT DO |
 | 5 - Reviews & Ratings | | | |                                                                                                                                                                                                         |                              | | WILL NOT DO |
@@ -36,7 +36,6 @@ Issue if the team later decides to attempt it for extra credit._
 - Slice 5 - <name>: not building (team of 3).
 - <Slice 1>: addresses — out of scope.
 - <Slice 1>: extra roles — out of scope.
-- <Slice 2>: categories/filters — out of scope.
 - <Slice 2>: image handling — out of scope.
 - <Slice 2>: pagination — out of scope.
 - <Slice 3>: coupons — out of scope.
@@ -74,7 +73,7 @@ Issue if the team later decides to attempt it for extra credit._
 ## Extra Credit Log
 | Item | Who | Evidence (Issue/PR) |
 |------|-----|---------------------|
-|  | | |
+| 1 |Ha Nguyen |<Slice 2>: categories/filters PR #26 |
 
 
 ## App Run Instructions
