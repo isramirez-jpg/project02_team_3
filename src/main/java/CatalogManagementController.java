@@ -2,13 +2,13 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 
 import java.util.Optional;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Controller for the Catalog Management scene.
@@ -28,16 +28,19 @@ public class CatalogManagementController {
     private TableView<Product> productTable;
 
     @FXML
-    private TableColumn<Product, Number> productIdColumn;
+    private TableColumn<Product, Integer> productIdColumn;
 
     @FXML
     private TableColumn<Product, String> productNameColumn;
 
     @FXML
-    private TableColumn<Product, Number> productCategoryIdColumn;
+    private TableColumn<Product, Integer> productCategoryIdColumn;
 
     @FXML
-    private TableColumn<Product, Number> priceColumn;
+    private TableColumn<Product, String> descriptionColumn;
+
+    @FXML
+    private TableColumn<Product, Double> priceColumn;
 
     @FXML
     private TableColumn<Product, String> genderColumn;
@@ -49,8 +52,10 @@ public class CatalogManagementController {
     private TableColumn<Product, String> sizeColumn;
 
     @FXML
-    private TableColumn<Product, Number> stockColumn;
+    private TableColumn<Product, Integer> stockColumn;
 
+    @FXML
+    private TableColumn<Product, String> imagePathColumn;
 
     // Category Table
 
@@ -82,11 +87,14 @@ public class CatalogManagementController {
     @FXML
     public void initialize() {
 
+        // Allow product cells to be edited directly.
+        productTable.setEditable(true);
+
         // Product columns
         productIdColumn.setCellValueFactory(
                 data -> new SimpleIntegerProperty(
                         data.getValue().getProductId()
-                )
+                ).asObject()
         );
 
         productNameColumn.setCellValueFactory(
@@ -98,13 +106,19 @@ public class CatalogManagementController {
         productCategoryIdColumn.setCellValueFactory(
                 data -> new SimpleIntegerProperty(
                         data.getValue().getCategoryId()
+                ).asObject()
+        );
+
+        descriptionColumn.setCellValueFactory(
+                data -> new SimpleStringProperty(
+                        data.getValue().getDescription()
                 )
         );
 
         priceColumn.setCellValueFactory(
                 data -> new SimpleDoubleProperty(
                         data.getValue().getPrice()
-                )
+                ).asObject()
         );
 
         genderColumn.setCellValueFactory(
@@ -128,9 +142,140 @@ public class CatalogManagementController {
         stockColumn.setCellValueFactory(
                 data -> new SimpleIntegerProperty(
                         data.getValue().getStockQuantity()
+                ).asObject()
+        );
+
+        imagePathColumn.setCellValueFactory(
+                data -> new SimpleStringProperty(
+                        data.getValue().getImagePath()
                 )
         );
 
+        // Make Product Name editable
+        productNameColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        productNameColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setProductName(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+        // Make Category ID editable
+        productCategoryIdColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn(
+                        new IntegerStringConverter()
+                )
+        );
+
+        productCategoryIdColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setCategoryId(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+        // Make Description editable
+        descriptionColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        descriptionColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setDescription(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+
+        // Make Price editable
+        priceColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn(
+                        new DoubleStringConverter()
+                )
+        );
+
+        priceColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setPrice(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+        // Make Gender editable
+        genderColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        genderColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setGender(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+
+        // Make Color editable
+        colorColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        colorColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setColor(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+        // Make Size editable
+        sizeColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        sizeColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setSize(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+
+        // Make Stock editable
+        stockColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn(
+                        new IntegerStringConverter()
+                )
+        );
+
+        stockColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setStockQuantity(event.getNewValue());
+
+            saveProduct(product);
+        });
+
+        // Make Image Path editable
+        imagePathColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        imagePathColumn.setOnEditCommit(event -> {
+            Product product = event.getRowValue();
+
+            product.setImagePath(event.getNewValue());
+
+            saveProduct(product);
+        });
 
         // Category columns
         categoryIdColumn.setCellValueFactory(
@@ -152,6 +297,25 @@ public class CatalogManagementController {
         );
     }
 
+    /**
+     * Saves an edited product to the database.
+     *
+     */
+    private void saveProduct(Product product) {
+
+        boolean updated = productDAO.update(product);
+
+        if (updated) {
+            productTable.refresh();
+        } else {
+            showError(
+                    "Update Failed",
+                    "The product could not be updated."
+            );
+
+            loadProducts();
+        }
+    }
 
     /**
      * Receives the application data from SceneFactory.
@@ -351,20 +515,6 @@ public class CatalogManagementController {
                 )
         );
     }
-
-
-    /**
-     * Placeholder for editing a product.
-     */
-    @FXML
-    private void handleEditProduct() {
-
-        showInformation(
-                "Edit Product",
-                "Edit Product functionality will be added next."
-        );
-    }
-
 
     /**
      * Placeholder for adding a category.
