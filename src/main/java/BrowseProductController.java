@@ -191,6 +191,33 @@ public class BrowseProductController {
     }
 
     /**
+     * Searches products by product name.
+     *
+     * @param products the list of products to search
+     * @param searchText the text entered by the user
+     * @return a list of products matching the search text
+     *
+     * LLM Assistance:
+     * ChatGPT was used to assist with creating a testable method
+     * for the existing product search functionality.
+     */
+    public List<Product> searchProducts(
+            List<Product> products,
+            String searchText) {
+
+        String search =
+                searchText.trim().toLowerCase();
+
+        return products.stream()
+                .filter(product ->
+                        search.isEmpty()
+                                || product.getProductName()
+                                .toLowerCase()
+                                .contains(search))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Applies the selected search and filter options.
      */
     private void applyFilters() {
