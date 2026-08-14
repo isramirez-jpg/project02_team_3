@@ -165,9 +165,6 @@
                             <Button text="Add Category"
                                     onAction="#handleAddCategory"/>
 
-                            <Button text="Edit Category"
-                                    onAction="#handleEditCategory"/>
-
                             <Button text="Delete Category"
                                     onAction="#handleDeleteCategory"/>
 

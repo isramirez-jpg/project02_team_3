@@ -295,6 +295,36 @@ public class CatalogManagementController {
                         data.getValue().getDescription()
                 )
         );
+        // Allow category cells to be edited directly.
+        categoryTable.setEditable(true);
+
+        // Make Category Name editable
+        categoryNameColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        categoryNameColumn.setOnEditCommit(event -> {
+
+            Category category = event.getRowValue();
+
+            category.setCategoryName(event.getNewValue());
+
+            saveCategory(category);
+        });
+
+        // Make Category Description editable
+        categoryDescriptionColumn.setCellFactory(
+                TextFieldTableCell.forTableColumn()
+        );
+
+        categoryDescriptionColumn.setOnEditCommit(event -> {
+
+            Category category = event.getRowValue();
+
+            category.setDescription(event.getNewValue());
+
+            saveCategory(category);
+        });
     }
 
     /**
@@ -314,6 +344,26 @@ public class CatalogManagementController {
             );
 
             loadProducts();
+        }
+    }
+
+    /**
+     * Saves an edited category to the database.
+     *
+     */
+    private void saveCategory(Category category) {
+
+        boolean updated = categoryDAO.update(category);
+
+        if (updated) {
+            categoryTable.refresh();
+        } else {
+            showError(
+                    "Update Failed",
+                    "The category could not be updated."
+            );
+
+            loadCategories();
         }
     }
 
@@ -529,20 +579,6 @@ public class CatalogManagementController {
                 )
         );
     }
-
-
-    /**
-     * Placeholder for editing a category.
-     */
-    @FXML
-    private void handleEditCategory() {
-
-        showInformation(
-                "Edit Category",
-                "Edit Category functionality will be added next."
-        );
-    }
-
 
     /**
      * Returns to the main scene.
