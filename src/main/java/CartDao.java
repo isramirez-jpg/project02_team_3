@@ -144,6 +144,18 @@ public class CartDao {
             CartItem item = existing.get();
             int newQuantity =
                     item.getQuantity() + quantity;
+            ProductInformation product =
+                    findProduct(productId);
+
+            if (newQuantity > product.stockQuantity) {
+                throw new IllegalArgumentException(
+                        "Only "
+                                + product.stockQuantity
+                                + " of "
+                                + product.productName
+                                + " are available."
+                );
+            }
 
             updateQuantity(
                     item.getCartItemId(),
@@ -156,6 +168,15 @@ public class CartDao {
 
         ProductInformation product =
                 findProduct(productId);
+        if (quantity > product.stockQuantity) {
+            throw new IllegalArgumentException(
+                    "Only "
+                            + product.stockQuantity
+                            + " of "
+                            + product.productName
+                            + " are available."
+            );
+        }
 
         String sql = """
                 INSERT INTO cart_items
@@ -250,6 +271,43 @@ public class CartDao {
     ) throws SQLException {
 
         validateQuantity(quantity);
+        String stockSql = """
+        SELECT p.product_name,
+               p.stock_quantity
+        FROM cart_items ci
+        JOIN products p
+          ON ci.product_id = p.product_id
+        WHERE ci.cart_item_id = ?
+        """;
+
+        try (PreparedStatement stockStatement =
+                     db.getConnection().prepareStatement(stockSql)) {
+
+            stockStatement.setInt(1, cartItemId);
+
+            try (ResultSet results =
+                         stockStatement.executeQuery()) {
+
+                if (results.next()) {
+
+                    int stockQuantity =
+                            results.getInt("stock_quantity");
+
+                    String productName =
+                            results.getString("product_name");
+
+                    if (quantity > stockQuantity) {
+                        throw new IllegalArgumentException(
+                                "Only "
+                                        + stockQuantity
+                                        + " of "
+                                        + productName
+                                        + " are available."
+                        );
+                    }
+                }
+            }
+        }
 
         String sql = """
                 UPDATE cart_items
@@ -385,10 +443,12 @@ public class CartDao {
             throws SQLException {
 
         String sql = """
-                SELECT product_name, price
-                FROM products
-                WHERE product_id = ?
-                """;
+        SELECT product_name,
+               price,
+               stock_quantity
+        FROM products
+        WHERE product_id = ?
+        """;
 
         try (PreparedStatement statement =
                      db.getConnection().prepareStatement(sql)) {
@@ -401,7 +461,8 @@ public class CartDao {
                 if (results.next()) {
                     return new ProductInformation(
                             results.getString("product_name"),
-                            results.getBigDecimal("price")
+                            results.getBigDecimal("price"),
+                            results.getInt("stock_quantity")
                     );
                 }
             }
@@ -424,13 +485,16 @@ public class CartDao {
 
         private final String productName;
         private final BigDecimal unitPrice;
+        private final int stockQuantity;
 
         private ProductInformation(
                 String productName,
-                BigDecimal unitPrice
+                BigDecimal unitPrice,
+                int stockQuantity
         ) {
             this.productName = productName;
             this.unitPrice = unitPrice;
+            this.stockQuantity = stockQuantity;
         }
     }
 }
