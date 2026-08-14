@@ -61,6 +61,10 @@ Issue if the team later decides to attempt it for extra credit._
 | #28 | Ha Nguyen      | ||         |
 | #29 | Miguel Quezada | | |         |
 | #30 | Isabel Ramirez | | |         |
+| #31 | Ha Nguyen | | |         |
+| #32 | Miguel Quezada | | |         |
+| #33 | Ha Nguyen | | |         |
+| #34 | Ha Nguyen | | |         |
 
 ## AI Usage Log
 
